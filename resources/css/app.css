@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "startbootstrap-sb-admin-2/css/sb-admin-2.min.css";
+
+/* Custom styles */
+:root {
+    --primary-color: #4e73df;
+    --secondary-color: #1cc88a;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f8f9fc;
+}
