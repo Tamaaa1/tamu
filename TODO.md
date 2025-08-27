@@ -1,26 +1,21 @@
-# TODO - Tambah Gambar Tanda Tangan pada Ekspor PDF dan Excel
+# TODO: Link Agenda ke Halaman Pendaftaran Peserta
 
-## Langkah-langkah yang akan dilakukan:
+## Tujuan
+Membuat link di kolom "Link Acara" pada halaman agenda admin yang mengarah ke halaman pendaftaran peserta dengan agenda spesifik, termasuk fitur dropdown untuk multiple agenda dalam 1 hari.
 
-1. [ ] Perbaiki `ParticipantsExport.php` untuk menampilkan gambar tanda tangan di Excel
-2. [ ] Perbaiki `export-pdf.blade.php` untuk menampilkan gambar tanda tangan di PDF
-3. [ ] Periksa dan perbaiki `AdminController.php` jika diperlukan
-4. [ ] Testing ekspor PDF dan Excel
+## Langkah-langkah:
+1. [x] Menambahkan route baru di routes/web.php
+2. [x] Menambahkan method baru di AgendaController.php
+3. [x] Mengubah link di resources/views/admin/agenda/index.blade.php
+4. [x] Memperbaiki path view di controller
+5. [x] Menambahkan dropdown pemilihan agenda di halaman pendaftaran
+6. [x] Memperbarui controller untuk mengambil semua agenda pada tanggal yang sama
 
 ## Progress:
-
-### 1. ParticipantsExport.php
-- [ ] Periksa path gambar tanda tangan
-- [ ] Pastikan gambar bisa ditampilkan di Excel
-
-### 2. export-pdf.blade.php
-- [ ] Periksa path gambar di PDF
-- [ ] Pastikan gambar bisa ditampilkan di PDF
-
-### 3. AdminController.php
-- [ ] Periksa method exportParticipantsPdf
-- [ ] Periksa method exportParticipantsExcel
-
-### 4. Testing
-- [ ] Test ekspor PDF
-- [ ] Test ekspor Excel
+- Semua langkah telah selesai
+- Route: `/agenda/{agenda}/register` telah ditambahkan
+- Method `showPublicAgenda` telah ditambahkan di controller dengan logika dropdown
+- Link di halaman agenda telah diubah untuk mengarah ke route baru
+- Path view telah diperbaiki dari `agenda.public-register` menjadi `admin.agenda.public-register`
+- Dropdown agenda ditambahkan untuk menangani multiple agenda dalam 1 hari
+- Controller sekarang mengirim data `$agendasOnSameDate` untuk dropdown

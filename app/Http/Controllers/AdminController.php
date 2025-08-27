@@ -48,7 +48,7 @@ class AdminController extends Controller
     {
         $query = AgendaDetail::with(['agenda', 'masterDinas']);
 
-        // Filter berdasarkan tanggal, bulan, dan tahun
+        // Filter berdasarkan tanggal, bulan, dan tahun (created_at)
         if ($request->filled('tanggal')) {
             $query->whereDay('created_at', $request->tanggal);
         }
@@ -59,6 +59,11 @@ class AdminController extends Controller
         
         if ($request->filled('tahun')) {
             $query->whereYear('created_at', $request->tahun);
+        }
+
+        // Filter berdasarkan agenda
+        if ($request->filled('agenda_id')) {
+            $query->where('agenda_id', $request->agenda_id);
         }
 
         $participants = $query->get();
@@ -71,7 +76,7 @@ class AdminController extends Controller
     {
         $query = AgendaDetail::with(['agenda', 'masterDinas'])->orderBy('created_at', 'desc');
 
-        // Filter berdasarkan tanggal, bulan, dan tahun
+        // Filter berdasarkan tanggal, bulan, dan tahun (created_at)
         if ($request->filled('tanggal')) {
             $query->whereDay('created_at', $request->tanggal);
         }
@@ -82,6 +87,11 @@ class AdminController extends Controller
         
         if ($request->filled('tahun')) {
             $query->whereYear('created_at', $request->tahun);
+        }
+
+        // Filter berdasarkan agenda
+        if ($request->filled('agenda_id')) {
+            $query->where('agenda_id', $request->agenda_id);
         }
 
         // Batasi jumlah data untuk PDF export
@@ -101,7 +111,7 @@ class AdminController extends Controller
 
     public function participantIndex(Request $request)
     {
-        $query = AgendaDetail::with(['agenda', 'masterDinas'])->latest();
+        $query = AgendaDetail::with(['agenda', 'masterDinas'])->orderBy('created_at', 'asc');
 
         // Filter berdasarkan tanggal, bulan, dan tahun (created_at)
         if ($request->filled('tanggal')) {
@@ -121,7 +131,9 @@ class AdminController extends Controller
         }
 
         $participants = $query->paginate(10);
-        return view('admin.participants.index', compact('participants'));
+        $agendas = Agenda::all(); // Tambahkan ini untuk dropdown filter
+        
+        return view('admin.participants.index', compact('participants', 'agendas'));
     }
 
     public function participantShow(AgendaDetail $participant)

@@ -14,6 +14,7 @@ Route::get('/', function () {
 
 // Public Agenda Registration (No Auth Required)
 Route::get('/agenda', [AgendaController::class, 'showPublic'])->name('agenda.public');
+Route::get('/agenda/{agenda}/register', [AgendaController::class, 'showPublicAgenda'])->name('agenda.public.register');
 Route::post('/agenda/register', [AgendaController::class, 'registerParticipant'])->name('agenda.register');
 
 // Authentication Routes

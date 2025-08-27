@@ -50,9 +50,6 @@ class AgendaDetailController extends Controller
         return view('agenda-detail.create', compact('agendas', 'dinas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([

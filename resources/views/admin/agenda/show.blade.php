@@ -41,9 +41,16 @@
                         
                         <h5 class="font-weight-bold">Link Acara</h5>
                         <p class="text-muted">
-                            <a href="{{ $agenda->link_acara }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-external-link-alt me-1"></i>{{ $agenda->link_acara }}
-                            </a>
+                            @if(!empty($agenda->link_acara))
+                                <a href="{{ $agenda->link_acara }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>{{ $agenda->link_acara }}
+                                </a>
+                            @else
+                                <span class="text-muted">Tidak ada link acara</span>
+                                <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-outline-info ml-2">
+                                    <i class="fas fa-user-plus me-1"></i>Halaman Pendaftaran
+                                </a>
+                            @endif
                         </p>
                     </div>
                     

@@ -15,7 +15,7 @@ class AgendaController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except(['showPublic', 'registerParticipant']);
+        $this->middleware('auth')->except(['showPublic', 'showPublicAgenda', 'registerParticipant']);
     }
 
     /**
@@ -60,7 +60,7 @@ class AgendaController extends Controller
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
             'nama_agenda' => 'required|string|max:255',
             'tanggal_agenda' => 'required|date',
-            'link_acara' => 'string|unique:agendas,link_acara'
+            'link_acara' => 'nullable|string'
         ]);
 
         $validated['nama_koordinator'] = Auth::user()->name ?? Auth::user()->username;
@@ -89,7 +89,7 @@ class AgendaController extends Controller
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
             'nama_agenda' => 'required|string|max:255',
             'tanggal_agenda' => 'required|date',
-            'link_acara' => 'string|unique:agendas,link_acara,' . $agenda->id
+            'link_acara' => 'nullable|string'
         ]);
 
         $agenda->update($validated);
@@ -108,24 +108,47 @@ class AgendaController extends Controller
 
     public function showPublic()
     {
-        // Ambil agenda terbaru berdasarkan tanggal
-        $agenda = Agenda::where('tanggal_agenda', '>=', now()->format('Y-m-d'))
-            ->orderBy('tanggal_agenda', 'asc')
+        // Ambil agenda untuk hari ini
+        $today = now()->format('Y-m-d');
+        $agenda = Agenda::whereDate('tanggal_agenda', $today)
+            ->orderBy('nama_agenda')
             ->first();
         
-        // Jika tidak ada agenda yang akan datang, ambil agenda terbaru yang sudah lewat
+        // Jika tidak ada agenda hari ini, tampilkan halaman no-agenda
         if (!$agenda) {
-            $agenda = Agenda::orderBy('tanggal_agenda', 'desc')->first();
+            return view('participant.no-agenda');
         }
         
         $dinas = MasterDinas::all();
         
-        // Jika tidak ada agenda sama sekali, redirect ke halaman dengan pesan
+        // Ambil semua agenda pada tanggal yang sama (hari ini) untuk dropdown pilihan
+        $agendasOnSameDate = Agenda::whereDate('tanggal_agenda', $today)
+            ->orderBy('nama_agenda')
+            ->get();
+            
+        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
+    }
+
+    /**
+     * Show the public agenda for registration
+     */
+    public function showPublicAgenda($agendaId)
+    {
+        // Cari agenda berdasarkan ID, jika tidak ditemukan tampilkan halaman no-agenda
+        $agenda = Agenda::find($agendaId);
+        
         if (!$agenda) {
-            return view('agenda.no-agenda');
+            return view('participant.no-agenda');
         }
         
-        return view('agenda.public-register', compact('agenda', 'dinas'));
+        $dinas = MasterDinas::all();
+        
+        // Ambil semua agenda pada tanggal yang sama untuk dropdown pilihan
+        $agendasOnSameDate = Agenda::whereDate('tanggal_agenda', $agenda->tanggal_agenda)
+            ->orderBy('nama_agenda')
+            ->get();
+            
+        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
     }
 
     /**
@@ -168,12 +191,11 @@ class AgendaController extends Controller
             
             // Extract the base64 data from the data URL
             if (preg_match('/^data:image\/(png|jpg|jpeg);base64,/', $signatureData, $matches)) {
-                $imageType = $matches[1];
                 $base64Data = substr($signatureData, strpos($signatureData, ',') + 1);
                 $imageData = base64_decode($base64Data);
                 
-                // Generate unique filename
-                $filename = 'signature_' . time() . '_' . uniqid() . '.' . $imageType;
+                // Generate unique filename - always use PNG format
+                $filename = 'signature_' . time() . '_' . uniqid() . '.png';
                 $path = 'tandatangan/' . $filename;
                 
                 // Store the file
@@ -212,26 +234,7 @@ class AgendaController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data berhasil disimpan!',
-            'qr_code' => $qrCodeBase64, 
             'participant' => $participant
         ]);
-    }
-
-    /**
-     * Export participants to Excel
-     */
-    public function exportExcel(Agenda $agenda)
-    {
-        // Implementation for Excel export
-        return response()->json(['message' => 'Excel export feature akan diimplementasikan']);
-    }
-
-    /**
-     * Export participants to PDF
-     */
-    public function exportPdf(Agenda $agenda)
-    {
-        // Implementation for PDF export
-        return response()->json(['message' => 'PDF export feature akan diimplementasikan']);
     }
 }

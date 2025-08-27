@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nama_agenda');
             $table->date('tanggal_agenda');
             $table->string('nama_koordinator');
-            $table->string('link_acara')->unique();
+            $table->string('link_acara')->nullable();
             $table->timestamps();
             
             // Add foreign key constraint manually

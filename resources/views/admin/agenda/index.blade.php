@@ -74,7 +74,7 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="{{ $agenda->link_acara }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-external-link-alt me-1"></i>Link
                                 </a>
                                 <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('{{ $agenda->link_acara }}')">
@@ -92,9 +92,15 @@
                                     <a href="{{ route('admin.agenda.edit', $agenda) }}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{{ route('agenda.public', $agenda->link_acara) }}" target="_blank" class="btn btn-sm btn-success">
-                                        <i class="fas fa-user-plus"></i>
-                                    </a>
+                                    @if(!empty($agenda->link_acara))
+                                        <a href="{{ $agenda->link_acara }}" target="_blank" class="btn btn-sm btn-success" title="Buka Link Acara">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-info" title="Buka Halaman Pendaftaran">
+                                            <i class="fas fa-user-plus"></i>
+                                        </a>
+                                    @endif
                                     <form action="{{ route('admin.agenda.destroy', $agenda) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus agenda ini?')">
                                         @csrf
                                         @method('DELETE')

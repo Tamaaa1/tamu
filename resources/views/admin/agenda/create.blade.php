@@ -66,7 +66,7 @@
                     <div class="form-group">
                         <label for="link_acara">Link Acara <span class="text-danger">*</span></label>
                         <input type="text" class="form-control @error('link_acara') is-invalid @enderror" 
-                               id="link_acara" name="link_acara" value="{{ old('link_acara') }}" required>
+                               id="link_acara" name="link_acara" value="{{ old('link_acara') }}">
                         @error('link_acara')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
