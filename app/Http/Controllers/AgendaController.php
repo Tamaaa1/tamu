@@ -18,9 +18,7 @@ class AgendaController extends Controller
         $this->middleware('auth')->except(['showPublic', 'showPublicAgenda', 'registerParticipant']);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
+    // Menampilkan Daftar dari Resource
     public function index(Request $request)
     {
         $query = Agenda::with(['masterDinas', 'koordinator'])->latest();
@@ -42,18 +40,14 @@ class AgendaController extends Controller
         return view('admin.agenda.index', compact('agendas'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    // Menampilkan Form untuk membuat resource baru
     public function create()
     {
         $dinas = MasterDinas::all();
         return view('admin.agenda.create', compact('dinas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Menampilkan Form untuk menyimpan resource baru
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -106,6 +100,42 @@ class AgendaController extends Controller
             ->with('success', 'Agenda berhasil dihapus!');
     }
 
+     // Tampilkan QR code untuk agenda
+    public function showQrCode(Agenda $agenda)
+    {
+        $agenda->load(['masterDinas', 'koordinator']);
+        
+        // Generate QR code for the public registration URL
+        $publicUrl = route('agenda.public.register', $agenda);
+        $qrCode = QrCode::size(200)->generate($publicUrl);
+        
+        return view('admin.agenda.qrcode', compact('agenda', 'qrCode', 'publicUrl'));
+    }
+
+    // Export QR Code ke PDF dan simpan link registrasi ke database
+    public function exportQrCodePdf(Agenda $agenda)
+    {
+        $agenda->load(['masterDinas', 'koordinator']);
+        
+        // QR Code untuk URL pendaftaran publik
+        $publicUrl = route('agenda.public.register', $agenda);
+        $qrCodeSvg = QrCode::size(200)->generate($publicUrl);
+        
+        // Convert SVG to base64
+        $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
+        
+        // Simpan link registrasi ke database
+        $agenda->update(['link_acara' => $publicUrl]);
+        
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.agenda.export-pdf', [
+            'agenda' => $agenda,
+            'qrCodeBase64' => $qrCodeBase64,
+            'publicUrl' => $publicUrl
+        ]);
+        
+        return $pdf->download('qrcode-agenda-' . $agenda->id . '.pdf');
+    }
+
     public function showPublic()
     {
         // Ambil agenda untuk hari ini
@@ -129,9 +159,7 @@ class AgendaController extends Controller
         return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
     }
 
-    /**
-     * Show the public agenda for registration
-     */
+    // Menampilkan agenda publik untuk pendaftaran
     public function showPublicAgenda($agendaId)
     {
         // Cari agenda berdasarkan ID, jika tidak ditemukan tampilkan halaman no-agenda
@@ -151,9 +179,7 @@ class AgendaController extends Controller
         return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
     }
 
-    /**
-     * Register participant (public access)
-     */
+    // Menampilkan Form untuk mendaftar peserta (akses publik)
     public function registerParticipant(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -184,21 +210,21 @@ class AgendaController extends Controller
             ], 422);
         }
 
-        // Convert Base64 signature to file
+        // Convert tanda tangan Base64 menjadi file
         $signaturePath = null;
         if ($request->signature) {
             $signatureData = $request->signature;
-            
-            // Extract the base64 data from the data URL
+
+            // Ekstrak data base64
             if (preg_match('/^data:image\/(png|jpg|jpeg);base64,/', $signatureData, $matches)) {
                 $base64Data = substr($signatureData, strpos($signatureData, ',') + 1);
                 $imageData = base64_decode($base64Data);
-                
-                // Generate unique filename - always use PNG format
+
+                // Buat nama file yang unik - selalu gunakan format PNG
                 $filename = 'signature_' . time() . '_' . uniqid() . '.png';
                 $path = 'tandatangan/' . $filename;
-                
-                // Store the file
+
+                // Simpan file
                 Storage::disk('public')->put($path, $imageData);
                 $signaturePath = $path;
             }

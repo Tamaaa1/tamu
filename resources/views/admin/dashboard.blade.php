@@ -6,9 +6,6 @@
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-    <a href="{{ route('admin.agenda.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-        <i class="fas fa-plus fa-sm text-white-50"></i> Buat Agenda Baru
-    </a>
 </div>
 
 <!-- Content Row -->
@@ -192,46 +189,6 @@
                         <p>Belum ada peserta yang mendaftar</p>
                     </div>
                 @endif
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Content Row -->
-<div class="row">
-    <!-- Quick Actions -->
-    <div class="col-12">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3 bg-primary text-white">
-                <h6 class="m-0 font-weight-bold text-white">Aksi Cepat</h6>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ route('admin.agenda.create') }}" class="btn btn-primary btn-block py-3">
-                            <i class="fas fa-plus fa-2x mb-2"></i><br>
-                            Buat Agenda Baru
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ route('admin.agenda.index') }}" class="btn btn-info btn-block py-3">
-                            <i class="fas fa-calendar fa-2x mb-2"></i><br>
-                            Kelola Agenda
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ route('admin.participants.index') }}" class="btn btn-warning btn-block py-3">
-                            <i class="fas fa-users fa-2x mb-2"></i><br>
-                            Lihat Peserta
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{{ route('admin.master-dinas.index') }}" class="btn btn-secondary btn-block py-3">
-                            <i class="fas fa-building fa-2x mb-2"></i><br>
-                            Kelola Dinas
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

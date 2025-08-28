@@ -132,6 +132,10 @@
                         <i class="fas fa-users me-2"></i>Lihat Semua Peserta
                     </a>
                     
+                    <a href="{{ route('admin.agenda.qrcode', $agenda) }}" class="btn btn-success btn-block py-2">
+                        <i class="fas fa-qrcode me-2"></i>Generate QR Code
+                    </a>
+                    
                     <form action="{{ route('admin.agenda.destroy', $agenda) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus agenda ini?')">
                         @csrf
                         @method('DELETE')

@@ -21,18 +21,6 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            // Check if user has admin role
-            $user = Auth::user();
-            if ($user && $user->role !== 'admin') {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-                
-                return back()->withErrors([
-                    'username' => 'Akses hanya untuk administrator.',
-                ])->withInput($request->only('username'));
-            }
-            
             $request->session()->regenerate();
             return redirect()->intended('/admin/dashboard');
         }

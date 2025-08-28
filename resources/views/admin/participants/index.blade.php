@@ -7,6 +7,7 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Manajemen Peserta</h1>
     <div>
+        <a href="{{ route('admin.participants.create') }}" class="btn btn-primary">Tambah Peserta</a>
         <a href="{{ route('participants.export-excel', request()->all()) }}" class="btn btn-success">Ekspor Excel</a>
         <a href="{{ route('participants.export-pdf', request()->all()) }}" class="btn btn-danger">Ekspor PDF</a>
     </div>
@@ -17,7 +18,7 @@
     <div class="input-group">
         <input type="number" name="tanggal" id="tanggal" class="form-control" placeholder="Tanggal" min="1" max="31" value="{{ request('tanggal') }}">
         <input type="number" name="bulan" id="bulan" class="form-control" placeholder="Bulan" min="1" max="12" value="{{ request('bulan') }}">
-        <input type="number" name="tahun" id="tahun" class="form-control" placeholder="Tahun" min="2000" max="{{ date('Y') }}" value="{{ request('tahun') }}">
+        <input type="number" name="tahun" id="tahun" class="form-control" placeholder="Tahun" min="2000" value="{{ request('tahun') }}">
         <select name="agenda_id" class="form-control">
             <option value="">Pilih Agenda...</option>
             @foreach($agendas as $agenda)

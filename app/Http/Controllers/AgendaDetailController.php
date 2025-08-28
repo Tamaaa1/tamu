@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class AgendaDetailController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Menampilkan Daftar dari resource
     public function index(Request $request)
     {
         $query = AgendaDetail::with(['agenda', 'masterDinas'])->latest();
@@ -40,9 +38,7 @@ class AgendaDetailController extends Controller
         return view('admin.agenda-detail.index', compact('participants'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+     // Menampilkan formulir untuk membuat resource baru.
     public function create()
     {
         $agendas = Agenda::all();
@@ -73,18 +69,14 @@ class AgendaDetailController extends Controller
             ->with('success', 'Peserta berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
+    // Menampilkan resource yang ditentukan.
     public function show(AgendaDetail $agendaDetail)
     {
         $agendaDetail->load(['agenda', 'masterDinas']);
         return view('agenda-detail.show', compact('agendaDetail'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    // Menampilkan Form untuk mengedit resource yang ditentukan.
     public function edit(AgendaDetail $agendaDetail)
     {
         $agendas = Agenda::all();
@@ -92,9 +84,7 @@ class AgendaDetailController extends Controller
         return view('agenda-detail.edit', compact('agendaDetail', 'agendas', 'dinas'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+    // Memperbarui resource yang ditentukan di penyimpanan.
     public function update(Request $request, AgendaDetail $agendaDetail)
     {
         $validated = $request->validate([
@@ -123,9 +113,7 @@ class AgendaDetailController extends Controller
             ->with('success', 'Data peserta berhasil diupdate!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Menghapus resource yang ditentukan dari penyimpanan.
     public function destroy(AgendaDetail $agendaDetail)
     {
         $agendaDetail->delete();

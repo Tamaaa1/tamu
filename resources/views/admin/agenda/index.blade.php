@@ -77,9 +77,9 @@
                                 <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-external-link-alt me-1"></i>Link
                                 </a>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard('{{ $agenda->link_acara }}')">
-                                    <i class="fas fa-copy me-1"></i>Copy
-                                </button>
+                                <a href="{{ route('admin.agenda.qrcode', $agenda) }}" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-qrcode me-1"></i>QR Code
+                                </a>
                             </td>
                             <td>
                                 <span class="badge badge-success">{{ $agenda->agendaDetail->count() }} Peserta</span>
@@ -128,24 +128,3 @@
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(function() {
-            // Show success message
-            const button = event.target.closest('button');
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
-            button.classList.remove('btn-outline-secondary');
-            button.classList.add('btn-success');
-            
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.classList.remove('btn-success');
-                button.classList.add('btn-outline-secondary');
-            }, 2000);
-        });
-    }
-</script>
-@endpush

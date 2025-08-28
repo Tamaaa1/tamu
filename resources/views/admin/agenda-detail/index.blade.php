@@ -22,7 +22,7 @@
     <div class="input-group">
         <input type="number" name="tanggal" id="tanggal" class="form-control" placeholder="Tanggal (1-31)" min="1" max="31" value="{{ request('tanggal') }}">
         <input type="number" name="bulan" id="bulan" class="form-control" placeholder="Bulan (1-12)" min="1" max="12" value="{{ request('bulan') }}">
-        <input type="number" name="tahun" id="tahun" class="form-control" placeholder="Tahun (2000-{{ date('Y') }})" min="2000" max="{{ date('Y') }}" value="{{ request('tahun') }}">
+        <input type="number" name="tahun" id="tahun" class="form-control" placeholder="Tahun" min="2000" value="{{ request('tahun') }}">
         <div class="input-group-append">
             <button type="submit" class="btn btn-primary">Filter</button>
             <a href="{{ route('admin.agenda-detail.index') }}" class="btn btn-secondary">Reset</a>

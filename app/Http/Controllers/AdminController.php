@@ -76,7 +76,7 @@ class AdminController extends Controller
     {
         $query = AgendaDetail::with(['agenda', 'masterDinas'])->orderBy('created_at', 'desc');
 
-        // Filter berdasarkan tanggal, bulan, dan tahun (created_at)
+        // Filter berdasarkan tanggal, bulan, dan tahun
         if ($request->filled('tanggal')) {
             $query->whereDay('created_at', $request->tanggal);
         }
@@ -94,7 +94,7 @@ class AdminController extends Controller
             $query->where('agenda_id', $request->agenda_id);
         }
 
-        // Batasi jumlah data untuk PDF export
+        // Batasi jumlah data untuk export PDF
         $participants = $query->limit(500)->get();
         
         // Konfigurasi DomPDF 
@@ -109,77 +109,66 @@ class AdminController extends Controller
         return $pdf->download($filename);
     }
 
-    public function participantIndex(Request $request)
+    // User Management Methods
+    public function userIndex()
     {
-        $query = AgendaDetail::with(['agenda', 'masterDinas'])->orderBy('created_at', 'asc');
-
-        // Filter berdasarkan tanggal, bulan, dan tahun (created_at)
-        if ($request->filled('tanggal')) {
-            $query->whereDay('created_at', $request->tanggal);
-        }
-        
-        if ($request->filled('bulan')) {
-            $query->whereMonth('created_at', $request->bulan);
-        }
-        
-        if ($request->filled('tahun')) {
-            $query->whereYear('created_at', $request->tahun);
-        }
-
-        if ($request->filled('agenda_id')) {
-            $query->where('agenda_id', $request->agenda_id);
-        }
-
-        $participants = $query->paginate(10);
-        $agendas = Agenda::all(); // Tambahkan ini untuk dropdown filter
-        
-        return view('admin.participants.index', compact('participants', 'agendas'));
+        $users = User::where('role', '!=', 'superadmin')->get();
+        return view('admin.users.index', compact('users'));
     }
 
-    public function participantShow(AgendaDetail $participant)
+    public function userCreate()
     {
-        $participant->load(['agenda', 'masterDinas']);
-        return view('admin.participants.show', compact('participant'));
+        return view('admin.users.create');
     }
 
-    public function participantEdit(AgendaDetail $participant)
-    {
-        $agendas = Agenda::all();
-        $dinas = MasterDinas::all();
-        return view('admin.participants.edit', compact('participant', 'agendas', 'dinas'));
-    }
-
-    public function participantUpdate(Request $request, AgendaDetail $participant)
+    public function userStore(Request $request)
     {
         $validated = $request->validate([
-            'agenda_id' => 'required|exists:agendas,id',
-            'nama' => 'required|string|max:255',
-            'dinas_id' => 'required|exists:master_dinas,dinas_id',
-            'jabatan' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:20',
-            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|unique:users,username',
+            'password' => 'required|string|min:8|confirmed',
+            'role' => 'required|in:admin,user'
         ]);
 
-        if ($request->hasFile('gambar_ttd')) {
-            // Hapus file lama jika ada
-            if ($participant->gambar_ttd && Storage::disk('public')->exists($participant->gambar_ttd)) {
-                Storage::disk('public')->delete($participant->gambar_ttd);
-            }
-            
-            $path = $request->file('gambar_ttd')->store('tandatangan', 'public');
-            $validated['gambar_ttd'] = $path;
-        }
+        $validated['password'] = bcrypt($validated['password']);
 
-        $participant->update($validated);
+        User::create($validated);
 
-        return redirect()->route('admin.participants.index')
-            ->with('success', 'Peserta berhasil diupdate!');
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User berhasil ditambahkan!');
     }
 
-    public function participantDestroy(AgendaDetail $participant)
+    public function userEdit(User $user)
     {
-        $participant->delete();
-        return redirect()->route('admin.participants.index')
-            ->with('success', 'Peserta berhasil dihapus!');
+        return view('admin.users.edit', compact('user'));
+    }
+
+    public function userUpdate(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|unique:users,username,' . $user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+            'role' => 'required|in:admin,user'
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = bcrypt($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User berhasil diupdate!');
+    }
+
+    public function userDestroy(User $user)
+    {
+        $user->delete();
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User berhasil dihapus!');
     }
 }

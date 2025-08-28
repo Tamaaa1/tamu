@@ -64,6 +64,15 @@
             </a>
         </li>
 
+        @if(Auth::user()->isAdmin())
+        <li class="nav-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.users.index') }}">
+                <i class="fas fa-fw fa-user-cog text-info"></i>
+                <span>Manajemen User</span>
+            </a>
+        </li>
+        @endif
+
         <hr class="sidebar-divider">
         <div class="sidebar-heading">Sistem</div>
 

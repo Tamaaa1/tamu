@@ -21,15 +21,27 @@ class AdminMiddleware
         }
 
         $user = Auth::user();
-        if ($user->role !== 'admin') {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-            
-            return redirect()->route('login')
-                ->withErrors(['username' => 'Akses hanya untuk administrator.']);
+        
+        // Jika user bukan admin dan mencoba mengakses manajemen user, tolak akses
+        if ($user->role !== 'admin' && $this->isUserManagementRoute($request)) {
+            return redirect()->route('admin.dashboard')
+                ->withErrors(['access' => 'Akses manajemen user hanya untuk administrator.']);
         }
 
         return $next($request);
+    }
+
+    /**
+     * Check if the request is for user management routes
+     */
+    private function isUserManagementRoute(Request $request): bool
+    {
+        $route = $request->route();
+        if (!$route) {
+            return false;
+        }
+
+        $routeName = $route->getName();
+        return strpos($routeName, 'admin.users.') === 0;
     }
 }
