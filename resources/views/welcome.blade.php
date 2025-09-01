@@ -127,7 +127,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p class="mb-0">&copy; 2025 Sistem Manajemen Agenda TAMU. All rights reserved.</p>
+            <p>&copy; Copyright Dinas Komunikasi dan Informatika Kota Pontianak.</p>
         </div>
     </footer>
 

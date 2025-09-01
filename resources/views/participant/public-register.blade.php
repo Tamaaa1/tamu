@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="{{ asset('css/public-register.css') }}" rel="stylesheet">
-</head>
+</head>S
 <body>
     <!-- Header Section -->
     <div class="govt-header">
@@ -119,7 +119,7 @@
                                                 <option value="{{ $dinasItem->dinas_id }}">{{ $dinasItem->nama_dinas }}</option>
                                             @endforeach
                                         </select>
-                                        <div class="error-message" id="dinas_id-error"></div>
+                                        <div class="error-message" accesskeyid="dinas_id-error"></div>
                                     </div>
                                 </div>
                             </div>
@@ -193,153 +193,13 @@
     <!-- Footer -->
     <footer class="text-center py-4 text-white mt-5">
         <div class="container">
-            <p>&copy; 2025 Dinas Komunikasi dan Informatika. All rights reserved.</p>
+            <p>&copy; Copyright Dinas Komunikasi dan Informatika Kota Pontianak.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <script src="{{ asset('js/signature-pad.js') }}"></script>
-    <script>
-
-        // Form submission handling
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault(); 
-            
-            // Clear errors
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-            document.getElementById('errorMessage').style.display = 'none';
-            
-            // Validate signature menggunakan signaturePadManager
-            const signatureError = window.signaturePadManager.validate();
-            if (signatureError) {
-                showError('signature', signatureError);
-                return;
-            }
-
-            // Update signature input
-            if (!document.getElementById('signatureInput').value) {
-                const signatureData = window.signaturePadManager.toDataURL();
-                document.getElementById('signatureInput').value = signatureData;
-            }
-
-            // Submit form
-            const formData = new FormData(this);
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerHTML;
-            
-            submitBtn.disabled = true;
-            submitBtn.classList.add('btn-loading');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
-
-            fetch('/agenda/register', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(err => { throw err; });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    showSuccess(data.message, data.qr_code);
-                    document.getElementById('registrationForm').reset();
-                    signaturePad.clear();
-                    document.querySelector('.signature-placeholder').style.display = 'flex';
-                } else {
-                    showErrors(data.errors);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                if (error.errors) {
-                    showErrors(error.errors);
-                } else {
-                    showError('general', 'Terjadi kesalahan. Silakan refresh halaman dan coba lagi.');
-                }
-            })
-            .finally(() => {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('btn-loading');
-                submitBtn.innerHTML = originalText;
-            });
-        });
-
-        function clearErrors() {
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-            document.getElementById('errorMessage').style.display = 'none';
-        }
-
-        function showError(field, message) {
-            const errorElement = document.getElementById(field + '-error');
-            if (errorElement) {
-                errorElement.textContent = message;
-            }
-        }
-
-        function showErrors(errors) {
-            Object.keys(errors).forEach(field => {
-                showError(field, errors[field][0]);
-            });
-        }
-
-        function showSuccess(message) {
-            const successElement = document.getElementById('successMessage');
-            successElement.style.display = 'block';
-            
-            // Hapus QR code container jika ada
-            const qrContainer = document.getElementById('qrCodeContainer');
-            if (qrContainer) {
-                qrContainer.style.display = 'none';
-            }
-            
-            successElement.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Agenda selection change
-        document.getElementById('agenda_id').addEventListener('change', function() {
-            const selectedAgendaId = this.value;
-            document.getElementById('selected_agenda_id').value = selectedAgendaId;
-            
-            // Update agenda title
-            const selectedOption = this.options[this.selectedIndex];
-            document.getElementById('agendaTitle').innerText = selectedOption.text;
-        });
-
-        // Input validation
-        document.querySelectorAll('input, select').forEach(input => {
-            input.addEventListener('input', function() {
-                const errorElement = document.getElementById(this.name + '-error');
-                if (errorElement) {
-                    errorElement.textContent = '';
-                }
-            });
-        });
-
-        // Copy to clipboard function
-        function copyToClipboard(text, event) {
-            navigator.clipboard.writeText(text).then(function() {
-                // Show success message
-                const button = event.target.closest('button');
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
-                button.classList.remove('btn-outline-secondary');
-                button.classList.add('btn-success');
-                
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.classList.remove('btn-success');
-                    button.classList.add('btn-outline-secondary');
-                }, 2000);
-            });
-        }
-    </script>
+    <script src="{{ asset('js/public-register.js') }}"></script>
 </body>
 </html>

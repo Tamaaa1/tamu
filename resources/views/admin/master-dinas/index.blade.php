@@ -25,7 +25,7 @@
                                     <th>No</th>
                                     <th>Nama Dinas</th>
                                     <th>Alamat</th>
-                                    <th>No Telp</th>
+                                    <th>Email</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -35,7 +35,7 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $dinasItem->nama_dinas }}</td>
                                         <td>{{ $dinasItem->alamat ?? '-' }}</td>
-                                        <td>{{ $dinasItem->no_telp ?? '-' }}</td>
+                                        <td>{{ $dinasItem->email ?? '-' }}</td>
                                         <td>
                                             <a href="{{ route('admin.master-dinas.edit', $dinasItem) }}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>

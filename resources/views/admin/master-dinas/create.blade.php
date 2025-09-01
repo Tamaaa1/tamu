@@ -23,8 +23,8 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="no_telp" class="form-label">No Telp</label>
-                                <input type="text" class="form-control" id="no_telp" name="no_telp">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email">
                             </div>
                         </div>
                         <div class="d-flex justify-content-end">

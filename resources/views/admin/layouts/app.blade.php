@@ -135,7 +135,7 @@
         <!-- Footer -->
         <footer class="sticky-footer bg-gradient-primary text-white">
             <div class="container text-center">
-                <span>© {{ date('Y') }} TAMU | testing</span>
+                <p>&copy; Copyright Dinas Komunikasi dan Informatika Kota Pontianak.</p>
             </div>
         </footer>
     </div>

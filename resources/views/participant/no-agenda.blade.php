@@ -41,10 +41,6 @@
                             <i class="fas fa-info-circle me-2"></i>
                             Administrator dapat membuat agenda baru melalui panel admin.
                         </div>
-                        
-                        <a href="/" class="btn btn-primary mt-3">
-                            <i class="fas fa-home me-2"></i>Kembali ke Halaman Utama
-                        </a>
                     </div>
                 </div>
             </div>

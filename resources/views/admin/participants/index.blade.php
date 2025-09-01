@@ -8,7 +8,7 @@
     <h1 class="h3 mb-0 text-gray-800">Manajemen Peserta</h1>
     <div>
         <a href="{{ route('admin.participants.create') }}" class="btn btn-primary">Tambah Peserta</a>
-        <a href="{{ route('participants.export-excel', request()->all()) }}" class="btn btn-success">Ekspor Excel</a>
+        <!-- Removed Excel export button -->
         <a href="{{ route('participants.export-pdf', request()->all()) }}" class="btn btn-danger">Ekspor PDF</a>
     </div>
 </div>

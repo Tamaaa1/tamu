@@ -28,7 +28,7 @@ class MasterDinasController extends Controller
         $validated = $request->validate([
             'nama_dinas' => 'required|string|max:255',
             'alamat' => 'nullable|string|max:500',
-            'no_telp' => 'nullable|string|max:20'
+            'email' => 'nullable|email|max:255'
         ]);
 
         // Generate unique dinas_id
@@ -50,7 +50,7 @@ class MasterDinasController extends Controller
         $validated = $request->validate([
             'nama_dinas' => 'required|string|max:255',
             'alamat' => 'nullable|string|max:500',
-            'no_telp' => 'nullable|string|max:20'
+            'email' => 'nullable|email|max:255'
         ]);
 
         $masterDina->update($validated);

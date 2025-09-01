@@ -15,7 +15,7 @@ class MasterDinas extends Model
     protected $fillable = [
         'dinas_id',
         'nama_dinas',
-        'no_telp',
+        'email',
         'alamat',
     ];
     
