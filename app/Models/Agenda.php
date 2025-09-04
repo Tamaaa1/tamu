@@ -18,6 +18,7 @@ class Agenda extends Model
         'tanggal_agenda',
         'nama_koordinator',
         'link_acara',
+        'link_active',
     ];
 
     // relasi ke master_dinas

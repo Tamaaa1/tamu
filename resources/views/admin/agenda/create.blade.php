@@ -64,13 +64,22 @@
                 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="link_acara">Link Acara <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('link_acara') is-invalid @enderror" 
+                        <label for="link_acara">Link Acara</label>
+                        <input type="text" class="form-control @error('link_acara') is-invalid @enderror"
                                id="link_acara" name="link_acara" value="{{ old('link_acara') }}">
                         @error('link_acara')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="link_active" name="link_active" value="1" {{ old('link_active', true) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="link_active">
+                        Aktifkan Link & QR Code
+                    </label>
                 </div>
             </div>
             

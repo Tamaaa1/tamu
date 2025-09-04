@@ -74,12 +74,16 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-external-link-alt me-1"></i>Link
-                                </a>
-                                <a href="{{ route('admin.agenda.qrcode', $agenda) }}" class="btn btn-sm btn-outline-info">
-                                    <i class="fas fa-qrcode me-1"></i>QR Code
-                                </a>
+                                @if($agenda->link_active)
+                                    <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="fas fa-external-link-alt"></i> Link
+                                    </a>
+                                    <a href="{{ route('admin.agenda.qrcode', $agenda) }}" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-qrcode"></i> QR Code
+                                    </a>
+                                @else
+                                    <span class="text-muted">Tidak Aktif</span>
+                                @endif
                             </td>
                             <td>
                                 <span class="badge badge-success">{{ $agenda->agendaDetail->count() }} Peserta</span>
@@ -92,15 +96,18 @@
                                     <a href="{{ route('admin.agenda.edit', $agenda) }}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    @if(!empty($agenda->link_acara))
-                                        <a href="{{ $agenda->link_acara }}" target="_blank" class="btn btn-sm btn-success" title="Buka Link Acara">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
-                                    @else
-                                        <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-info" title="Buka Halaman Pendaftaran">
-                                            <i class="fas fa-user-plus"></i>
-                                        </a>
-                                    @endif
+                                    <form action="{{ route('admin.agenda.toggle-link', $agenda) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @if($agenda->link_active)
+                                            <button type="submit" class="btn btn-sm btn-success" title="Nonaktifkan Link & QR Code">
+                                                <i class="fas fa-toggle-on"></i>
+                                            </button>
+                                        @else
+                                            <button type="submit" class="btn btn-sm btn-secondary" title="Aktifkan Link & QR Code">
+                                                <i class="fas fa-toggle-off"></i>
+                                            </button>
+                                        @endif
+                                    </form>
                                     <form action="{{ route('admin.agenda.destroy', $agenda) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus agenda ini?')">
                                         @csrf
                                         @method('DELETE')

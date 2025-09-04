@@ -58,6 +58,7 @@ class AgendaController extends Controller
         ]);
 
         $validated['nama_koordinator'] = Auth::user()->name ?? Auth::user()->username;
+        $validated['link_active'] = $request->has('link_active') ? true : false;
 
         Agenda::create($validated);
 
@@ -86,6 +87,8 @@ class AgendaController extends Controller
             'link_acara' => 'nullable|string'
         ]);
 
+        $validated['link_active'] = $request->has('link_active') ? true : false;
+
         $agenda->update($validated);
 
         return redirect()->route('admin.agenda.index')
@@ -98,6 +101,15 @@ class AgendaController extends Controller
 
         return redirect()->route('admin.agenda.index')
             ->with('success', 'Agenda berhasil dihapus!');
+    }
+
+    // Toggle link active status
+    public function toggleLinkActive(Agenda $agenda)
+    {
+        $agenda->update(['link_active' => !$agenda->link_active]);
+
+        return redirect()->route('admin.agenda.index')
+            ->with('success', 'Status link agenda berhasil diubah!');
     }
 
      // Tampilkan QR code untuk agenda
@@ -138,21 +150,23 @@ class AgendaController extends Controller
 
     public function showPublic()
     {
-        // Ambil agenda untuk hari ini
+        // Ambil agenda untuk hari ini yang aktif
         $today = now()->format('Y-m-d');
         $agenda = Agenda::whereDate('tanggal_agenda', $today)
+            ->where('link_active', true)
             ->orderBy('nama_agenda')
             ->first();
-        
-        // Jika tidak ada agenda hari ini, tampilkan halaman no-agenda
+
+        // Jika tidak ada agenda hari ini yang aktif, tampilkan halaman no-agenda
         if (!$agenda) {
             return view('participant.no-agenda');
         }
         
         $dinas = MasterDinas::all();
         
-        // Ambil semua agenda pada tanggal yang sama (hari ini) untuk dropdown pilihan
+        // Ambil semua agenda pada tanggal yang sama (hari ini) yang aktif untuk dropdown pilihan
         $agendasOnSameDate = Agenda::whereDate('tanggal_agenda', $today)
+            ->where('link_active', true)
             ->orderBy('nama_agenda')
             ->get();
             
@@ -162,17 +176,20 @@ class AgendaController extends Controller
     // Menampilkan agenda publik untuk pendaftaran
     public function showPublicAgenda($agendaId)
     {
-        // Cari agenda berdasarkan ID, jika tidak ditemukan tampilkan halaman no-agenda
-        $agenda = Agenda::find($agendaId);
-        
+        // Cari agenda berdasarkan ID yang aktif, jika tidak ditemukan atau tidak aktif tampilkan halaman no-agenda
+        $agenda = Agenda::where('id', $agendaId)
+            ->where('link_active', true)
+            ->first();
+
         if (!$agenda) {
             return view('participant.no-agenda');
         }
         
         $dinas = MasterDinas::all();
         
-        // Ambil semua agenda pada tanggal yang sama untuk dropdown pilihan
+        // Ambil semua agenda pada tanggal yang sama yang aktif untuk dropdown pilihan
         $agendasOnSameDate = Agenda::whereDate('tanggal_agenda', $agenda->tanggal_agenda)
+            ->where('link_active', true)
             ->orderBy('nama_agenda')
             ->get();
             
