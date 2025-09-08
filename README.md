@@ -66,7 +66,7 @@
 
 1. **Clone Repository**
    ```bash
-   git clone https://github.com/username/sistem-agenda.git
+   git clone https://github.com/Tamaaaaa1/tamu.git
    cd sistem-agenda
    ```
 
@@ -163,7 +163,7 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=agenda_db
+DB_DATABASE=tamu_db
 DB_USERNAME=root
 DB_PASSWORD=
 
@@ -201,27 +201,11 @@ Sistem ini menyediakan API endpoints untuk integrasi:
 - `POST /api/agenda/register` - Pendaftaran peserta
 - `GET /api/agenda/{id}/participants` - List peserta (admin only)
 
-## 🤝 Kontribusi
-
-Kami menerima kontribusi! Silakan ikuti langkah berikut:
-
-1. Fork repository
-2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buat Pull Request
-
 ### Panduan Kontribusi
 - Ikuti PSR-12 coding standard
 - Tambahkan test untuk fitur baru
 - Update dokumentasi jika diperlukan
 - Pastikan semua test pass
-
-## 👥 Tim Pengembang
-
-- **Developer**: [Nama Anda]
-- **Designer**: [Nama Designer]
-- **Project Manager**: [Nama PM]
 
 ## 🙏 Acknowledgments
 
