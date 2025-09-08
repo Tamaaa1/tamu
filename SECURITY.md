@@ -1,107 +1,74 @@
-# Panduan Keamanan Aplikasi TAMU
+# Panduan Keamanan untuk Repository GitHub Sistem Manajemen Agenda
 
-## Konfigurasi Keamanan Production
+Dokumentasi ini menjelaskan aspek keamanan penting yang diterapkan dalam proyek Sistem Manajemen Agenda. Pastikan untuk mengikuti panduan ini agar aplikasi tetap aman dan sesuai standar keamanan terbaik.
 
-### 1. Environment Variables untuk Production
+---
 
-Pastikan konfigurasi berikut di file `.env` untuk environment production:
+## 1. Konfigurasi Environment
 
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://yourdomain.com
+- Jangan pernah menyimpan file `.env` di repository publik.
+- Pastikan variabel berikut diatur dengan benar di environment production:
+  - `APP_ENV=production`
+  - `APP_DEBUG=false`
+  - `SESSION_SECURE_COOKIE=true`
+  - `SESSION_HTTP_ONLY=true`
+  - `SESSION_SAME_SITE=lax`
+- Gunakan SSL/HTTPS untuk semua komunikasi.
 
-SESSION_ENCRYPT=true
-SESSION_SECURE_COOKIE=true
-SESSION_HTTP_ONLY=true
-SESSION_SAME_SITE=lax
-```
+## 2. Autentikasi dan Otorisasi
 
-### 2. Rate Limiting
+- Password disimpan menggunakan hashing yang aman (`bcrypt` via Laravel `Hash::make`).
+- Semua route admin dilindungi middleware `auth` dan `admin`.
+- Rate limiting diterapkan pada route login dan pendaftaran publik untuk mencegah brute force dan spam.
+- CSRF protection aktif pada semua form menggunakan `@csrf` directive di Blade templates.
 
-Aplikasi sudah dilengkapi dengan rate limiting untuk login:
-- Maksimal 5 attempt per menit untuk login
-- Mencegah brute force attacks
+## 3. Validasi Input dan Upload File
 
-### 3. Authentication & Authorization
+- Semua input divalidasi secara ketat di controller.
+- Upload tanda tangan digital hanya menerima file gambar dengan tipe `png`, `jpg`, `jpeg` dan ukuran maksimal 2MB.
+- File tanda tangan disimpan dengan nama unik di direktori yang aman (`storage/app/public/tandatangan`).
 
-**Fitur Keamanan yang Sudah Diimplementasikan:**
-- ✅ Password hashing dengan bcrypt
-- ✅ CSRF protection untuk semua form
-- ✅ Session management yang aman
-- ✅ Role-based access control (hanya admin yang bisa login)
-- ✅ Input validation komprehensif
+## 4. Session dan Cookie
 
-### 4. File Upload Security
+- Session menggunakan driver database untuk keamanan lebih baik.
+- Session dienkripsi dan cookie diset dengan flag `Secure` dan `HttpOnly`.
+- Session lifetime disesuaikan (default 2 jam).
 
-**Signature Upload:**
-- Validasi file type (png, jpg, jpeg)
-- Maximum file size: 2MB
-- File disimpan dengan nama unique
-- Directory: `storage/app/public/tandatangan`
+## 5. Database
 
-### 5. Database Security
+- Menggunakan prepared statements melalui Eloquent ORM untuk mencegah SQL Injection.
+- Database user memiliki hak akses terbatas sesuai kebutuhan.
+- Indexing pada tabel untuk performa dan keamanan query.
 
-**Best Practices:**
-- Gunakan prepared statements (Eloquent sudah handle ini)
-- Validasi semua input sebelum ke database
-- Gunakan database user dengan privileges terbatas
+## 6. Logging dan Monitoring
 
-### 6. Session Security
+- Aktivitas penting seperti login gagal, upload file, dan aktivitas admin dicatat di log.
+- Log error dan exception dicatat untuk investigasi keamanan.
 
-**Konfigurasi yang Disarankan:**
-```env
-SESSION_DRIVER=database  # Lebih aman daripada file
-SESSION_LIFETIME=120     # 2 jam
-SESSION_ENCRYPT=true     # Encrypt session data
-SESSION_SECURE_COOKIE=true # Hanya HTTPS
-```
+## 7. Backup dan Recovery
 
-### 7. HTTPS Configuration
+- Backup database dan file upload secara berkala.
+- Simpan backup di lokasi terpisah dan aman.
 
-**Wajib untuk Production:**
-- Gunakan SSL certificate
-- Set `APP_URL` dengan https://
-- Enable HSTS header jika memungkinkan
+## 8. Update dan Patch
 
-### 8. Regular Security Updates
+- Framework Laravel dan dependencies selalu diperbarui ke versi terbaru.
+- Pantau advisories keamanan dan segera lakukan patch jika ditemukan kerentanan.
 
-**Yang Perlu Diperhatikan:**
-- Update Laravel framework secara berkala
-- Update dependencies dengan `composer update`
-- Monitor security advisories
+## 9. Testing Keamanan
 
-### 9. Backup Strategy
+- Manual testing meliputi:
+  - Uji rate limiting login dan pendaftaran.
+  - Uji akses route admin tanpa autentikasi.
+  - Uji upload file dengan tipe dan ukuran tidak valid.
+  - Uji CSRF protection.
+- Automated testing sudah tersedia di folder `tests/Feature` dan `tests/Unit`.
 
-**Rekomendasi Backup:**
-- Backup database regularly
-- Backup file uploads (signatures)
-- Simpan backup di lokasi terpisah
+## 10. Respons Darurat
 
-### 10. Monitoring & Logging
-
-**Yang Harus Dimonitor:**
-- Failed login attempts
-- File upload activities
-- Admin activities
-- Error logs
-
-## Cara Testing Keamanan
-
-### Manual Testing:
-1. Test login dengan credential salah (harus ada rate limiting)
-2. Test akses admin routes tanpa login (harus redirect ke login)
-3. Test file upload dengan file tidak valid
-4. Test CSRF protection dengan request tanpa token
-
-### Automated Testing:
-Jalankan test suite yang sudah disediakan.
-
-## Emergency Response
-
-Jika terjadi security breach:
-1. Matikan aplikasi sementara jika diperlukan
-2. Reset semua user sessions
-3. Review logs untuk investigasi
-4. Update credentials yang compromised
-5. Deploy patch jika diperlukan
+- Jika terjadi pelanggaran keamanan:
+  - Segera matikan akses publik jika perlu.
+  - Reset semua session pengguna.
+  - Review log untuk investigasi.
+  - Update kredensial yang terkompromi.
+  - Deploy patch keamanan.

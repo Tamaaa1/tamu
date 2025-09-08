@@ -3,7 +3,6 @@
 [![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0+-orange.svg)](https://mysql.com)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 > 🚀 **Sistem Manajemen Agenda Modern** - Platform lengkap untuk mengelola agenda acara, pendaftaran peserta, dan administrasi dengan fitur digital signature dan QR code.
 
@@ -129,27 +128,6 @@
 3. **Tanda Tangan Digital** menggunakan signature pad
 4. **Konfirmasi Pendaftaran**
 
-## 🏗️ Struktur Proyek
-
-```
-sistem-agenda/
-├── app/
-│   ├── Http/Controllers/     # Controller classes
-│   ├── Models/              # Eloquent models
-│   ├── Traits/              # Reusable traits
-│   └── Helpers/             # Helper classes
-├── database/
-│   ├── migrations/          # Database migrations
-│   └── seeders/            # Database seeders
-├── public/                  # Public assets
-├── resources/
-│   ├── views/              # Blade templates
-│   └── css/                # Custom styles
-├── routes/
-│   └── web.php             # Route definitions
-└── tests/                  # Test files
-```
-
 ## 🔧 Konfigurasi
 
 ### Environment Variables
@@ -163,7 +141,7 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=tamu_db
+DB_DATABASE=db_tamu
 DB_USERNAME=root
 DB_PASSWORD=
 
