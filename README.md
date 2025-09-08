@@ -1,65 +1,235 @@
-<<<<<<< HEAD
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎯 Sistem Manajemen Agenda
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Laravel](https://img.shields.io/badge/Laravel-12-red.svg)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0+-orange.svg)](https://mysql.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## About Laravel
+> 🚀 **Sistem Manajemen Agenda Modern** - Platform lengkap untuk mengelola agenda acara, pendaftaran peserta, dan administrasi dengan fitur digital signature dan QR code.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 👨‍💼 Panel Admin
+- 📊 **Dashboard** - Overview lengkap sistem
+- 📅 **Manajemen Agenda** - CRUD agenda dengan detail acara
+- 👥 **Manajemen Peserta** - Kelola pendaftaran peserta
+- 🏢 **Master Dinas** - Database departemen/instansi
+- 👤 **Manajemen User** - Kontrol akses admin
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🌐 Pendaftaran Publik
+- 📝 **Form Pendaftaran** - Interface user-friendly
+- ✍️ **Digital Signature** - Tanda tangan elektronik
+- 🔒 **Rate Limiting** - Proteksi dari spam
+- 📱 **Responsive Design** - Mobile-friendly
 
-## Learning Laravel
+### 📊 Laporan & Export
+- 📄 **Export PDF** - Laporan agenda dan peserta
+- 📊 **Export Excel** - Data dalam format spreadsheet
+- 📱 **QR Code** - Generate QR untuk akses cepat
+- 🔍 **Filtering** - Pencarian berdasarkan tanggal, bulan, tahun
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🔐 Keamanan & Performa
+- 🔐 **Authentication** - Sistem login aman
+- 🛡️ **Middleware Admin** - Kontrol akses berbasis role
+- ⚡ **Caching** - Optimasi performa
+- 🗄️ **Database Indexing** - Query cepat
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🛠️ Tech Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Backend
+- **Laravel 12** - Framework PHP modern
+- **PHP 8.2+** - Bahasa pemrograman
+- **MySQL 8.0+** - Database relasional
 
-## Laravel Sponsors
+### Frontend
+- **Blade Templates** - Template engine Laravel
+- **Tailwind CSS** - Framework CSS utility-first
+- **Alpine.js** - JavaScript framework minimal
+- **Vite** - Build tool modern
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Libraries & Packages
+- **DomPDF** - Generate PDF
+- **SimpleQRCode** - Generate QR Code
+- **Maatwebsite Excel** - Export Excel
+- **Signature Pad** - Digital signature
 
-### Premium Partners
+## 🚀 Instalasi
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Persyaratan Sistem
+- PHP 8.2 atau lebih tinggi
+- Composer
+- Node.js & NPM
+- MySQL 8.0+
+- Git
 
-## Contributing
+### Langkah Instalasi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/username/sistem-agenda.git
+   cd sistem-agenda
+   ```
 
-## Code of Conduct
+2. **Install Dependencies PHP**
+   ```bash
+   composer install
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+3. **Install Dependencies JavaScript**
+   ```bash
+   npm install
+   ```
 
-## Security Vulnerabilities
+4. **Konfigurasi Environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+5. **Konfigurasi Database**
+   - Buat database MySQL baru
+   - Update file `.env` dengan kredensial database
 
-## License
+6. **Jalankan Migration & Seeder**
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-=======
-# Tamu
->>>>>>> e0ee939a8345a6d364a9232c29b027d50586fa94
+7. **Build Assets**
+   ```bash
+   npm run build
+   # atau untuk development
+   npm run dev
+   ```
+
+8. **Jalankan Server**
+   ```bash
+   php artisan serve
+   ```
+
+## 📖 Penggunaan
+
+### Akses Sistem
+- **Halaman Publik**: `http://localhost:8000/agenda`
+- **Panel Admin**: `http://localhost:8000`
+
+### Fitur Utama
+
+#### Untuk Admin
+1. **Login** ke panel admin
+2. **Buat Agenda** baru dengan detail acara
+3. **Kelola Peserta** yang mendaftar
+4. **Generate QR Code** untuk akses cepat
+5. **Export Data** dalam format PDF/Excel
+
+#### Untuk Peserta
+1. **Akses Link/QR code Agenda** yang diberikan
+2. **Isi Form Pendaftaran** dengan data lengkap
+3. **Tanda Tangan Digital** menggunakan signature pad
+4. **Konfirmasi Pendaftaran**
+
+## 🏗️ Struktur Proyek
+
+```
+sistem-agenda/
+├── app/
+│   ├── Http/Controllers/     # Controller classes
+│   ├── Models/              # Eloquent models
+│   ├── Traits/              # Reusable traits
+│   └── Helpers/             # Helper classes
+├── database/
+│   ├── migrations/          # Database migrations
+│   └── seeders/            # Database seeders
+├── public/                  # Public assets
+├── resources/
+│   ├── views/              # Blade templates
+│   └── css/                # Custom styles
+├── routes/
+│   └── web.php             # Route definitions
+└── tests/                  # Test files
+```
+
+## 🔧 Konfigurasi
+
+### Environment Variables
+```env
+APP_NAME="Sistem Manajemen Agenda"
+APP_ENV=local
+APP_KEY=base64:key
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=agenda_db
+DB_USERNAME=root
+DB_PASSWORD=
+
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+```
+
+### Queue & Background Jobs
+```bash
+# Jalankan queue worker
+php artisan queue:work
+
+# Jalankan scheduler
+php artisan schedule:run
+```
+
+## 🧪 Testing
+
+```bash
+# Jalankan semua test
+php artisan test
+
+# Jalankan test spesifik
+php artisan test --filter=AuthTest
+```
+
+## 📚 API Documentation
+
+Sistem ini menyediakan API endpoints untuk integrasi:
+
+- `GET /api/agenda` - List agenda aktif
+- `POST /api/agenda/register` - Pendaftaran peserta
+- `GET /api/agenda/{id}/participants` - List peserta (admin only)
+
+## 🤝 Kontribusi
+
+Kami menerima kontribusi! Silakan ikuti langkah berikut:
+
+1. Fork repository
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+### Panduan Kontribusi
+- Ikuti PSR-12 coding standard
+- Tambahkan test untuk fitur baru
+- Update dokumentasi jika diperlukan
+- Pastikan semua test pass
+
+## 👥 Tim Pengembang
+
+- **Developer**: [Nama Anda]
+- **Designer**: [Nama Designer]
+- **Project Manager**: [Nama PM]
+
+## 🙏 Acknowledgments
+
+- [Laravel](https://laravel.com) - The PHP Framework
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS
+- [DomPDF](https://github.com/dompdf/dompdf) - PDF generation
+- [SimpleQRCode](https://github.com/SimpleSoftwareIO/simple-qrcode) - QR Code library
+
+[⬆️ Back to top](#-sistem-manajemen-agenda)
+
+</div>

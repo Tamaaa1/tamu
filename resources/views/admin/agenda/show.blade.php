@@ -10,9 +10,6 @@
         <a href="{{ route('admin.agenda.index') }}" class="d-none d-sm-inline-block btn btn-sm btn-secondary shadow-sm">
             <i class="fas fa-arrow-left fa-sm text-white-50"></i> Kembali
         </a>
-        <a href="{{ route('admin.agenda.edit', $agenda) }}" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm">
-            <i class="fas fa-edit fa-sm text-white-50"></i> Edit
-        </a>
     </div>
 </div>
 
@@ -41,15 +38,12 @@
                         
                         <h5 class="font-weight-bold">Link Acara</h5>
                         <p class="text-muted">
-                            @if(!empty($agenda->link_acara))
-                                <a href="{{ $agenda->link_acara }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-external-link-alt me-1"></i>{{ $agenda->link_acara }}
+                            @if(!empty($agenda->unique_token))
+                                <a href="{{ route('agenda.public.register.token', ['token' => $agenda->unique_token]) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>Halaman Pendaftaran Publik
                                 </a>
                             @else
-                                <span class="text-muted">Tidak ada link acara</span>
-                                <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-outline-info ml-2">
-                                    <i class="fas fa-user-plus me-1"></i>Halaman Pendaftaran
-                                </a>
+                                <span class="text-muted">Token belum tersedia</span>
                             @endif
                         </p>
                     </div>

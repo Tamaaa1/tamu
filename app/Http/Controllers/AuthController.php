@@ -8,11 +8,13 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    // Tampilkan halaman login
     public function showLogin()
     {
         return view('auth.login');
     }
 
+    // Proses login user
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -21,7 +23,7 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+            $request->session()->regenerate(); // Regenerasi session untuk keamanan
             return redirect()->intended('/admin/dashboard');
         }
 
@@ -30,12 +32,13 @@ class AuthController extends Controller
         ])->withInput($request->only('username'));
     }
 
+    // Proses logout user
     public function logout(Request $request)
     {
         Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        
+        $request->session()->invalidate(); // Hapus session
+        $request->session()->regenerateToken(); // Regenerasi CSRF token
+
         return redirect('/');
     }
 }

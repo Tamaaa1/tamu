@@ -9,11 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
+    // Handle request masuk - cek autentikasi dan otorisasi
     public function handle(Request $request, Closure $next): Response
     {
         if (!Auth::check()) {
@@ -21,7 +17,7 @@ class AdminMiddleware
         }
 
         $user = Auth::user();
-        
+
         // Jika user bukan admin dan mencoba mengakses manajemen user, tolak akses
         if ($user->role !== 'admin' && $this->isUserManagementRoute($request)) {
             return redirect()->route('admin.dashboard')
@@ -31,9 +27,7 @@ class AdminMiddleware
         return $next($request);
     }
 
-    /**
-     * Check if the request is for user management routes
-     */
+    // Cek apakah request untuk route manajemen user
     private function isUserManagementRoute(Request $request): bool
     {
         $route = $request->route();

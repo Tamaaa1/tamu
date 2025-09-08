@@ -6,9 +6,6 @@
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Manajemen Agenda</h1>
-    <a href="{{ route('admin.agenda.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-        <i class="fas fa-plus fa-sm text-white-50"></i> Buat Agenda Baru
-    </a>
 </div>
 
 <!-- Filter Tanggal, Bulan, Tahun -->
@@ -35,8 +32,19 @@
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
-    <div class="card-header py-3 bg-primary text-white">
-        <h6 class="m-0 font-weight-bold text-primary">Daftar Agenda</h6>
+    <div class="card-header py-3 bg-primary text-white d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="m-0 font-weight-bold text-primary">Daftar Agenda</h6>
+            @if($agendas->hasPages())
+                <small class="text-light">
+                    Halaman {{ $agendas->currentPage() }} dari {{ $agendas->lastPage() }}
+                    (Total: {{ $agendas->total() }} data)
+                </small>
+            @endif
+        </div>
+        <a href="{{ route('admin.agenda.create') }}" class="btn btn-light btn-sm">
+            <i class="fas fa-plus me-1"></i> Buat Agenda Baru
+        </a>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -56,12 +64,12 @@
                 <tbody>
                     @forelse($agendas as $index => $agenda)
                         <tr>
-                            <td>{{ $index + 1 }}</td>
+                            <td>{{ ($agendas->currentPage() - 1) * $agendas->perPage() + $index + 1 }}</td>
                             <td>
                                 <strong>{{ $agenda->nama_agenda }}</strong>
                             </td>
                             <td>
-                                <span class="badge badge-info">
+                                <span class="badge badge-info d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 150px;">
                                     {{ $agenda->masterDinas->nama_dinas ?? 'N/A' }}
                                 </span>
                             </td>
@@ -75,9 +83,6 @@
                             </td>
                             <td>
                                 @if($agenda->link_active)
-                                    <a href="{{ route('agenda.public.register', $agenda) }}" target="_blank" class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="fas fa-external-link-alt"></i> Link
-                                    </a>
                                     <a href="{{ route('admin.agenda.qrcode', $agenda) }}" class="btn btn-sm btn-outline-info">
                                         <i class="fas fa-qrcode"></i> QR Code
                                     </a>
@@ -131,6 +136,9 @@
                     @endforelse
                 </tbody>
             </table>
+            <div class="mt-3 d-flex justify-content-center">
+                {{ $agendas->links() }}
+            </div>
         </div>
     </div>
 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MasterDinas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MasterDinasController extends Controller
 {
@@ -14,7 +15,7 @@ class MasterDinasController extends Controller
 
     public function index()
     {
-        $dinas = MasterDinas::all();
+        $dinas = MasterDinas::orderBy('nama_dinas')->paginate(15);
         return view('admin.master-dinas.index', compact('dinas'));
     }
 
@@ -31,13 +32,23 @@ class MasterDinasController extends Controller
             'email' => 'nullable|email|max:255'
         ]);
 
-        // Generate unique dinas_id
-        $validated['dinas_id'] = 'DIN-' . strtoupper(substr($validated['nama_dinas'], 0, 3)) . '-' . time();
+        try {
+            // Generate unique dinas_id
+            $validated['dinas_id'] = 'DIN-' . strtoupper(substr($validated['nama_dinas'], 0, 3)) . '-' . time();
 
-        MasterDinas::create($validated);
+            MasterDinas::create($validated);
 
-        return redirect()->route('admin.master-dinas.index')
-            ->with('success', 'Dinas berhasil ditambahkan!');
+            Log::info('Dinas baru dibuat: ' . $validated['nama_dinas']);
+
+            return redirect()->route('admin.master-dinas.index')
+                ->with('success', 'Dinas berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            Log::error('Gagal membuat dinas: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data dinas.']);
+        }
     }
 
     public function edit(MasterDinas $masterDina)
@@ -53,10 +64,20 @@ class MasterDinasController extends Controller
             'email' => 'nullable|email|max:255'
         ]);
 
-        $masterDina->update($validated);
+        try {
+            $masterDina->update($validated);
 
-        return redirect()->route('admin.master-dinas.index')
-            ->with('success', 'Dinas berhasil diupdate!');
+            Log::info('Dinas diupdate: ' . $validated['nama_dinas']);
+
+            return redirect()->route('admin.master-dinas.index')
+                ->with('success', 'Dinas berhasil diupdate!');
+        } catch (\Exception $e) {
+            Log::error('Gagal update dinas: ' . $e->getMessage());
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Terjadi kesalahan saat mengupdate data dinas.']);
+        }
     }
 
     public function destroy(MasterDinas $masterDina)

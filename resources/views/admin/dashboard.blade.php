@@ -113,9 +113,9 @@
                             <tbody>
                                 @foreach($recentAgendas as $agenda)
                                     <tr>
-                                        <td>{{ $agenda->nama_agenda }}</td>
+                                        <td style="word-wrap: break-word; white-space: normal; max-width: 200px;">{{ $agenda->nama_agenda }}</td>
                                         <td>
-                                            <span class="badge badge-info">
+                                            <span class="badge badge-info d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 150px;">
                                                 {{ $agenda->masterDinas->nama_dinas ?? 'N/A' }}
                                             </span>
                                         </td>
@@ -169,7 +169,7 @@
                                         <td>{{ $participant->nama }}</td>
                                         <td>{{ $participant->jabatan }}</td>
                                         <td>
-                                            <span class="badge badge-primary">
+                                            <span class="badge badge-primary d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 150px;">
                                                 {{ $participant->agenda->nama_agenda ?? 'N/A' }}
                                             </span>
                                         </td>

@@ -6,7 +6,15 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">Data Master Dinas</h3>
+                    <div>
+                        <h3 class="card-title">Data Master Dinas</h3>
+                        @if($dinas->hasPages())
+                            <small class="text-muted">
+                                Halaman {{ $dinas->currentPage() }} dari {{ $dinas->lastPage() }}
+                                (Total: {{ $dinas->total() }} data)
+                            </small>
+                        @endif
+                    </div>
                     <a href="{{ route('admin.master-dinas.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus me-1"></i>Tambah Dinas
                     </a>
@@ -56,6 +64,11 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination Links -->
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $dinas->links() }}
                     </div>
                 </div>
             </div>

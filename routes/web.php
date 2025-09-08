@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\PublicAgendaController;
 use App\Http\Controllers\AgendaDetailController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
@@ -14,9 +15,12 @@ Route::get('/', function () {
 })->name('welcome');
 
 // Public Agenda Registration (No Auth Required)
-Route::get('/agenda', [AgendaController::class, 'showPublic'])->name('agenda.public');
-Route::get('/agenda/{agenda}/register', [AgendaController::class, 'showPublicAgenda'])->name('agenda.public.register');
-Route::post('/agenda/register', [AgendaController::class, 'registerParticipant'])->name('agenda.register');
+Route::get('/agenda', [PublicAgendaController::class, 'showPublic'])->name('agenda.public');
+Route::get('/agenda/{agenda}/register', [PublicAgendaController::class, 'showPublicAgenda'])->name('agenda.public.register');
+Route::get('/agenda/register/{token}', [PublicAgendaController::class, 'showPublicAgendaByToken'])->name('agenda.public.register.token');
+Route::post('/agenda/register', [PublicAgendaController::class, 'registerParticipant'])
+    ->middleware('throttle:10,1') // Rate limiting: 10 requests per minute
+    ->name('agenda.register');
 
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

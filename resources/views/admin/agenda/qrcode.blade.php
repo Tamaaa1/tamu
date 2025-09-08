@@ -49,11 +49,17 @@
                 <!-- URL Information -->
                 <div class="mb-4">
                     <h5 class="font-weight-bold">Link Pendaftaran</h5>
-                    <p class="text-muted">
-                        <a href="{{ $publicUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-external-link-alt me-1"></i>{{ $publicUrl }}
-                        </a>
-                    </p>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="publicUrl" value="{{ $publicUrl }}" readonly>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" type="button" id="copyButton" onclick="copyToClipboard()">
+                                <i class="fas fa-copy"></i> Salin
+                            </button>
+                            <a href="{{ $publicUrl }}" target="_blank" class="btn btn-outline-success">
+                                <i class="fas fa-external-link-alt"></i> Buka
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Dinas Information -->
@@ -77,3 +83,66 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+function copyToClipboard() {
+    const urlInput = document.getElementById('publicUrl');
+    const copyButton = document.getElementById('copyButton');
+    const textToCopy = urlInput.value;
+
+    // Try modern clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(function() {
+            showSuccess();
+        }).catch(function(err) {
+            console.error('Clipboard API failed: ', err);
+            fallbackCopy(textToCopy);
+        });
+    } else {
+        fallbackCopy(textToCopy);
+    }
+
+    function fallbackCopy(text) {
+        // Create a temporary textarea for reliable copying
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showSuccess();
+            } else {
+                throw new Error('execCommand failed');
+            }
+        } catch (err) {
+            console.error('Fallback copy failed: ', err);
+            alert("Gagal menyalin link. Silakan salin manual dari kotak teks.");
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+
+    function showSuccess() {
+        // Change button text temporarily
+        const originalText = copyButton.innerHTML;
+        copyButton.innerHTML = '<i class="fas fa-check"></i> Tersalin!';
+        copyButton.classList.remove('btn-outline-primary');
+        copyButton.classList.add('btn-success');
+
+        // Reset button after 2 seconds
+        setTimeout(function() {
+            copyButton.innerHTML = originalText;
+            copyButton.classList.remove('btn-success');
+            copyButton.classList.add('btn-outline-primary');
+        }, 2000);
+    }
+}
+</script>
+@endpush

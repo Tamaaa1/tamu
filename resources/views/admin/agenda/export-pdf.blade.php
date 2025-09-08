@@ -128,12 +128,7 @@ body {
 
         <div class="qrcode-container">
             <div class="qrcode-title">SCAN QR CODE UNTUK PENDAFTARAN</div>
-            <img src="{{ $qrCodeBase64 }}" alt="QR Code Agenda" style="width: 200px; height: 200px;">
-        </div>
-
-        <div class="url-section">
-            <div class="url-label">Link Pendaftaran:</div>
-            <div class="url-value">{{ $publicUrl }}</div>
+            <img src="{{ $qrCodeBase64 }}" alt="QR Code Agenda" style="width: 250px; height: 250px;">
         </div>
     </div>
 

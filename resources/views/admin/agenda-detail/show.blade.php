@@ -20,7 +20,13 @@
         <p><strong>Dinas:</strong> {{ $agenda->masterDinas->nama_dinas }}</p>
         <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($agenda->tanggal_agenda)->format('d/m/Y') }}</p>
         <p><strong>Koordinator:</strong> {{ $agenda->koordinator->name ?? $agenda->nama_koordinator }}</p>
-        <p><strong>Link Acara:</strong> <a href="{{ $agenda->link_acara }}" target="_blank">{{ $agenda->link_acara }}</a></p>
+        <p><strong>Link Acara:</strong> 
+            @if(!empty($agenda->unique_token))
+                <a href="{{ route('agenda.public.register.token', ['token' => $agenda->unique_token]) }}" target="_blank">Halaman Pendaftaran Publik</a>
+            @else
+                <span class="text-muted">Token belum tersedia</span>
+            @endif
+        </p>
     </div>
 </div>
 

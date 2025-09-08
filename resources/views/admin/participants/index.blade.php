@@ -6,12 +6,9 @@
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Manajemen Peserta</h1>
-    <div>
-        <a href="{{ route('admin.participants.create') }}" class="btn btn-primary">Tambah Peserta</a>
-        <!-- Removed Excel export button -->
-        <a href="{{ route('participants.export-pdf', request()->all()) }}" class="btn btn-danger">Ekspor PDF</a>
-    </div>
 </div>
+
+
 
 <!-- Filter Tanggal, Bulan, Tahun -->
 <form method="GET" action="{{ route('admin.participants.index') }}" class="mb-4">
@@ -63,7 +60,25 @@
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
     <div class="card-header py-3 bg-primary text-white">
-        <h6 class="m-0 font-weight-bold text-primary">Daftar Peserta</h6>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="m-0 font-weight-bold text-white">Daftar Peserta</h6>
+                @if($participants->hasPages())
+                    <small class="text-white-50">
+                        Halaman {{ $participants->currentPage() }} dari {{ $participants->lastPage() }}
+                        (Total: {{ $participants->total() }} data)
+                    </small>
+                @endif
+            </div>
+            <div>
+                <a href="{{ route('admin.participants.create') }}" class="btn btn-light btn-sm me-2">
+                    <i class="fas fa-plus me-1"></i>Tambah Peserta
+                </a>
+                <a href="{{ route('participants.export-pdf', request()->all()) }}" class="btn btn-light btn-sm">
+                    <i class="fas fa-file-pdf me-1"></i>Ekspor PDF
+                </a>
+            </div>
+        </div>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -87,13 +102,13 @@
                             <td>{{ $participant->nama }}</td>
                             <td>{{ $participant->jabatan }}</td>
                             <td>
-                                <span class="badge badge-info">
+                                <span class="badge badge-info d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 150px;">
                                     {{ $participant->masterDinas->nama_dinas ?? 'N/A' }}
                                 </span>
                             </td>
                             <td>{{ $participant->no_hp }}</td>
                             <td>
-                                <span class="badge badge-primary">
+                                <span class="badge badge-primary d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 150px;">
                                     {{ $participant->agenda->nama_agenda ?? 'N/A' }}
                                 </span>
                             </td>

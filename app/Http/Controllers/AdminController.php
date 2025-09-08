@@ -7,6 +7,7 @@ use App\Models\AgendaDetail;
 use App\Models\MasterDinas;
 use App\Models\User;
 use App\Exports\ParticipantsExport;
+use App\Traits\Filterable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,7 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class AdminController extends Controller
 {
+    use Filterable;
     public function dashboard()
     {
         $totalAgendas = Agenda::count();
@@ -48,26 +50,12 @@ class AdminController extends Controller
     {
         $query = AgendaDetail::with(['agenda', 'masterDinas']);
 
-        // Filter berdasarkan tanggal, bulan, dan tahun (created_at)
-        if ($request->filled('tanggal')) {
-            $query->whereDay('created_at', $request->tanggal);
-        }
-        
-        if ($request->filled('bulan')) {
-            $query->whereMonth('created_at', $request->bulan);
-        }
-        
-        if ($request->filled('tahun')) {
-            $query->whereYear('created_at', $request->tahun);
-        }
-
-        // Filter berdasarkan agenda
-        if ($request->filled('agenda_id')) {
-            $query->where('agenda_id', $request->agenda_id);
-        }
+        // Apply filters using trait
+        $query = $this->applyDateFilters($query, $request);
+        $query = $this->applyAgendaFilter($query, $request);
 
         $participants = $query->get();
-        
+
         $filename = 'peserta_' . date('Y-m-d_H-i-s') . '.xlsx';
         return Excel::download(new ParticipantsExport($participants), $filename);
     }
@@ -76,35 +64,21 @@ class AdminController extends Controller
     {
         $query = AgendaDetail::with(['agenda', 'masterDinas'])->orderBy('created_at', 'desc');
 
-        // Filter berdasarkan tanggal, bulan, dan tahun
-        if ($request->filled('tanggal')) {
-            $query->whereDay('created_at', $request->tanggal);
-        }
-        
-        if ($request->filled('bulan')) {
-            $query->whereMonth('created_at', $request->bulan);
-        }
-        
-        if ($request->filled('tahun')) {
-            $query->whereYear('created_at', $request->tahun);
-        }
-
-        // Filter berdasarkan agenda
-        if ($request->filled('agenda_id')) {
-            $query->where('agenda_id', $request->agenda_id);
-        }
+        // Apply filters using trait
+        $query = $this->applyDateFilters($query, $request);
+        $query = $this->applyAgendaFilter($query, $request);
 
         // Batasi jumlah data untuk export PDF
         $participants = $query->limit(500)->get();
-        
-        // Konfigurasi DomPDF 
+
+        // Konfigurasi DomPDF
         $pdf = PDF::setOptions([
             'isHtml5ParserEnabled' => true,
             'isRemoteEnabled' => true,
             'dpi' => 96,
             'defaultFont' => 'sans-serif'
         ])->loadView('admin.participants.export-pdf', compact('participants'));
-        
+
         $filename = 'peserta_' . date('Y-m-d_H-i-s') . '.pdf';
         return $pdf->download($filename);
     }
@@ -123,19 +97,24 @@ class AdminController extends Controller
 
     public function userStore(Request $request)
     {
+        // Validasi input pengguna baru dengan aturan keamanan
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|unique:users,username',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,user'
+            'nama' => 'required|string|max:255', // Nama lengkap pengguna
+            'nama_pengguna' => 'required|string|unique:users,username', // Username unik
+            'kata_sandi' => 'required|string|min:8|confirmed', // Password dengan konfirmasi
+            'peran' => 'required|in:admin,pengguna' // Role pengguna (admin atau pengguna biasa)
         ]);
 
-        $validated['password'] = bcrypt($validated['password']);
+        // Hash password untuk keamanan sebelum disimpan ke database
+        $validated['password'] = Hash::make($validated['kata_sandi']);
+        // Hapus field kata_sandi karena sudah di-hash ke password
+        unset($validated['kata_sandi']);
 
+        // Simpan pengguna baru ke database
         User::create($validated);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User berhasil ditambahkan!');
+            ->with('success', 'Pengguna berhasil ditambahkan!');
     }
 
     public function userEdit(User $user)
@@ -145,30 +124,38 @@ class AdminController extends Controller
 
     public function userUpdate(Request $request, User $user)
     {
+        // Validasi input update pengguna dengan pengecualian ID pengguna saat ini
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|unique:users,username,' . $user->id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'role' => 'required|in:admin,user'
+            'nama' => 'required|string|max:255', // Nama lengkap pengguna
+            'nama_pengguna' => 'required|string|unique:users,username,' . $user->id, // Username unik (exclude current user)
+            'kata_sandi' => 'nullable|string|min:8|confirmed', // Password opsional dengan konfirmasi
+            'peran' => 'required|in:admin,pengguna' // Role pengguna
         ]);
 
-        if ($request->filled('password')) {
-            $validated['password'] = bcrypt($validated['password']);
+        // Jika password diisi, hash password baru untuk keamanan
+        if ($request->filled('kata_sandi')) {
+            $validated['password'] = Hash::make($validated['kata_sandi']);
+            // Hapus field kata_sandi karena sudah di-hash
+            unset($validated['kata_sandi']);
         } else {
+            // Jika password tidak diubah, hapus dari array validasi
+            unset($validated['kata_sandi']);
             unset($validated['password']);
         }
 
+        // Update data pengguna di database
         $user->update($validated);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User berhasil diupdate!');
+            ->with('success', 'Pengguna berhasil diupdate!');
     }
 
     public function userDestroy(User $user)
     {
+        // Hapus pengguna dari database
         $user->delete();
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User berhasil dihapus!');
+            ->with('success', 'Pengguna berhasil dihapus!');
     }
 }
