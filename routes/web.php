@@ -36,7 +36,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Agenda Management
     Route::resource('agenda', AgendaController::class);
-    Route::get('agenda/{agenda}/export-excel', [AgendaController::class, 'exportExcel'])->name('agenda.export-excel');
     Route::get('agenda/{agenda}/export-pdf', [AgendaController::class, 'exportPdf'])->name('agenda.export-pdf');
     Route::get('agenda/{agenda}/qrcode', [AgendaController::class, 'showQrCode'])->name('agenda.qrcode');
     Route::get('agenda/{agenda}/export-qrcode-pdf', [AgendaController::class, 'exportQrCodePdf'])->name('agenda.export-qrcode-pdf');
