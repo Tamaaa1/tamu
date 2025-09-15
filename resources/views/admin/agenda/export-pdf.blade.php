@@ -100,6 +100,9 @@ body {
 </style>
 <body>
     <div class="header">
+        <div class="text-center mb-3">
+            <img src="{{ public_path('storage/Pemkot.png') }}" alt="Pemkot Logo" style="width: 80px; height: auto;">
+        </div>
         <h1>QR CODE AGENDA</h1>
         <h2>{{ $agenda->nama_agenda }}</h2>
     </div>
@@ -117,7 +120,7 @@ body {
             <div class="info-row">
                 <div class="info-label">Dinas:</div>
                 <div class="info-value">
-                    <span class="badge">{{ $agenda->masterDinas->nama_dinas ?? 'N/A' }}</span>
+                    <span class="badge" style="word-wrap: break-word; white-space: normal; max-width: 300px;">{{ $agenda->masterDinas->nama_dinas ?? 'N/A' }}</span>
                 </div>
             </div>
             <div class="info-row">

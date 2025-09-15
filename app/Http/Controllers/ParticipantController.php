@@ -7,6 +7,7 @@ use App\Models\AgendaDetail;
 use App\Models\MasterDinas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\SignatureHelper;
 
 class ParticipantController extends Controller
 {
@@ -32,14 +33,14 @@ class ParticipantController extends Controller
         }
 
         $participants = $query->paginate(10);
-        $agendas = Agenda::all(); 
-        
+        $agendas = Agenda::orderBy('tanggal_agenda', 'asc')->get();
+
         return view('admin.participants.index', compact('participants', 'agendas'));
     }
 
     public function create()
     {
-        $agendas = Agenda::all();
+        $agendas = Agenda::orderBy('tanggal_agenda', 'asc')->get();
         $dinas = MasterDinas::all();
         return view('admin.participants.create', compact('agendas', 'dinas'));
     }
@@ -51,13 +52,36 @@ class ParticipantController extends Controller
             'nama' => 'required|string|max:255',
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
             'jabatan' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:20',
+            'gender' => 'required|in:Laki-laki,Perempuan',
+            'no_hp' => 'required|string|regex:/^[0-9]+$/|min:10|max:13',
             'gambar_ttd' => 'nullable',
         ]);
 
         // Handle signature pad data (base64 image)
         if ($request->filled('gambar_ttd') && strpos($request->gambar_ttd, 'data:image/') === 0) {
-            $validated['gambar_ttd'] = $request->gambar_ttd; // Store as base64 string
+            // Validasi tipe konten dan ukuran file
+            $signatureData = $request->gambar_ttd;
+
+            // Cek tipe file (hanya PNG/JPG)
+            if (!preg_match('/^data:image\/(png|jpg|jpeg);base64,/', $signatureData)) {
+                return back()->withErrors(['gambar_ttd' => 'Tipe file tanda tangan harus PNG atau JPG.'])->withInput();
+            }
+
+            // Hitung ukuran file dari base64
+            $base64Data = substr($signatureData, strpos($signatureData, ',') + 1);
+            $fileSize = (strlen($base64Data) * 3 / 4); // Approximate decoded size
+
+            if ($fileSize > 2097152) { // 2MB in bytes
+                return back()->withErrors(['gambar_ttd' => 'Ukuran file tanda tangan maksimal 2MB.'])->withInput();
+            }
+
+            // Simpan sebagai file menggunakan SignatureHelper (seperti halaman pendaftaran tamu)
+            try {
+                $signaturePath = SignatureHelper::processSignature($signatureData);
+                $validated['gambar_ttd'] = $signaturePath;
+            } catch (\Exception $e) {
+                return back()->withErrors(['gambar_ttd' => 'Gagal menyimpan tanda tangan: ' . $e->getMessage()])->withInput();
+            }
         } else {
             $validated['gambar_ttd'] = null;
         }
@@ -76,7 +100,7 @@ class ParticipantController extends Controller
 
     public function edit(AgendaDetail $participant)
     {
-        $agendas = Agenda::all();
+        $agendas = Agenda::orderBy('tanggal_agenda', 'asc')->get();
         $dinas = MasterDinas::all();
         return view('admin.participants.edit', compact('participant', 'agendas', 'dinas'));
     }
@@ -88,13 +112,41 @@ class ParticipantController extends Controller
             'nama' => 'required|string|max:255',
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
             'jabatan' => 'required|string|max:255',
-            'no_hp' => 'required|string|max:20',
+            'gender' => 'required|in:Laki-laki,Perempuan',
+            'no_hp' => 'required|string|regex:/^[0-9]+$/|min:10|max:13',
             'gambar_ttd' => 'nullable',
         ]);
 
         // Handle signature pad data (base64 image)
         if ($request->filled('gambar_ttd') && strpos($request->gambar_ttd, 'data:image/') === 0) {
-            $validated['gambar_ttd'] = $request->gambar_ttd; // Store as base64 string
+            // Validasi tipe konten dan ukuran file
+            $signatureData = $request->gambar_ttd;
+
+            // Cek tipe file (hanya PNG/JPG)
+            if (!preg_match('/^data:image\/(png|jpg|jpeg);base64,/', $signatureData)) {
+                return back()->withErrors(['gambar_ttd' => 'Tipe file tanda tangan harus PNG atau JPG.'])->withInput();
+            }
+
+            // Hitung ukuran file dari base64
+            $base64Data = substr($signatureData, strpos($signatureData, ',') + 1);
+            $fileSize = (strlen($base64Data) * 3 / 4); // Approximate decoded size
+
+            if ($fileSize > 2097152) { // 2MB in bytes
+                return back()->withErrors(['gambar_ttd' => 'Ukuran file tanda tangan maksimal 2MB.'])->withInput();
+            }
+
+            // Hapus tanda tangan lama jika ada
+            if ($participant->gambar_ttd && !str_contains($participant->gambar_ttd, 'data:image/')) {
+                SignatureHelper::deleteSignature($participant->gambar_ttd);
+            }
+
+            // Simpan sebagai file menggunakan SignatureHelper (seperti halaman pendaftaran tamu)
+            try {
+                $signaturePath = SignatureHelper::processSignature($signatureData);
+                $validated['gambar_ttd'] = $signaturePath;
+            } catch (\Exception $e) {
+                return back()->withErrors(['gambar_ttd' => 'Gagal menyimpan tanda tangan: ' . $e->getMessage()])->withInput();
+            }
         } else {
             // Jika tidak ada tanda tangan baru, pertahankan yang lama
             $validated['gambar_ttd'] = $participant->gambar_ttd;
@@ -108,9 +160,16 @@ class ParticipantController extends Controller
 
     public function destroy(AgendaDetail $participant)
     {
+        // Hapus file tanda tangan jika ada dan bukan base64
+        if ($participant->gambar_ttd && !str_contains($participant->gambar_ttd, 'data:image/')) {
+            SignatureHelper::deleteSignature($participant->gambar_ttd);
+        }
+
         $participant->delete();
 
         return redirect()->route('admin.participants.index')
             ->with('success', 'Peserta berhasil dihapus!');
     }
+
+
 }

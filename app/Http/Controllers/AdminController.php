@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 class AdminController extends Controller
@@ -46,20 +45,6 @@ class AdminController extends Controller
         ));
     }
 
-    public function exportParticipantsExcel(Request $request)
-    {
-        $query = AgendaDetail::with(['agenda', 'masterDinas']);
-
-        // Apply filters using trait
-        $query = $this->applyDateFilters($query, $request);
-        $query = $this->applyAgendaFilter($query, $request);
-
-        $participants = $query->get();
-
-        $filename = 'peserta_' . date('Y-m-d_H-i-s') . '.xlsx';
-        return Excel::download(new ParticipantsExport($participants), $filename);
-    }
-
     public function exportParticipantsPdf(Request $request)
     {
         $query = AgendaDetail::with(['agenda', 'masterDinas'])->orderBy('created_at', 'desc');
@@ -71,13 +56,19 @@ class AdminController extends Controller
         // Batasi jumlah data untuk export PDF
         $participants = $query->limit(500)->get();
 
+        // Get agenda filter if applied
+        $agendaFilter = null;
+        if ($request->filled('agenda_id')) {
+            $agendaFilter = Agenda::find($request->agenda_id);
+        }
+
         // Konfigurasi DomPDF
         $pdf = PDF::setOptions([
             'isHtml5ParserEnabled' => true,
             'isRemoteEnabled' => true,
             'dpi' => 96,
             'defaultFont' => 'sans-serif'
-        ])->loadView('admin.participants.export-pdf', compact('participants'));
+        ])->loadView('admin.participants.export-pdf', compact('participants', 'agendaFilter'));
 
         $filename = 'peserta_' . date('Y-m-d_H-i-s') . '.pdf';
         return $pdf->download($filename);
@@ -99,16 +90,17 @@ class AdminController extends Controller
     {
         // Validasi input pengguna baru dengan aturan keamanan
         $validated = $request->validate([
-            'nama' => 'required|string|max:255', // Nama lengkap pengguna
-            'nama_pengguna' => 'required|string|unique:users,username', // Username unik
-            'kata_sandi' => 'required|string|min:8|confirmed', // Password dengan konfirmasi
-            'peran' => 'required|in:admin,pengguna' // Role pengguna (admin atau pengguna biasa)
+            'name' => 'required|string|max:255', // Nama lengkap pengguna
+            'username' => 'required|string|unique:users,username', // Username unik
+            'password' => 'required|string|min:8|confirmed|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/', // Password dengan konfirmasi dan validasi kompleksitas
+            'role' => 'required|in:admin,user' // Role pengguna (admin atau user biasa)
+        ], [
+            'password.regex' => 'Password harus mengandung minimal 1 huruf kecil, 1 huruf besar, dan 1 angka.',
+            'password.*' => 'Password tidak memenuhi syarat keamanan.'
         ]);
 
         // Hash password untuk keamanan sebelum disimpan ke database
-        $validated['password'] = Hash::make($validated['kata_sandi']);
-        // Hapus field kata_sandi karena sudah di-hash ke password
-        unset($validated['kata_sandi']);
+        $validated['password'] = Hash::make($validated['password']);
 
         // Simpan pengguna baru ke database
         User::create($validated);
@@ -126,20 +118,20 @@ class AdminController extends Controller
     {
         // Validasi input update pengguna dengan pengecualian ID pengguna saat ini
         $validated = $request->validate([
-            'nama' => 'required|string|max:255', // Nama lengkap pengguna
-            'nama_pengguna' => 'required|string|unique:users,username,' . $user->id, // Username unik (exclude current user)
-            'kata_sandi' => 'nullable|string|min:8|confirmed', // Password opsional dengan konfirmasi
-            'peran' => 'required|in:admin,pengguna' // Role pengguna
+            'name' => 'required|string|max:255', // Nama lengkap pengguna
+            'username' => 'required|string|unique:users,username,' . $user->id, // Username unik (exclude current user)
+            'password' => 'nullable|string|min:8|confirmed|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/', // Password opsional dengan konfirmasi dan validasi kompleksitas
+            'role' => 'required|in:admin,user' // Role pengguna
+        ], [
+            'password.regex' => 'Password harus mengandung minimal 1 huruf kecil, 1 huruf besar, dan 1 angka.',
+            'password.*' => 'Password tidak memenuhi syarat keamanan.'
         ]);
 
         // Jika password diisi, hash password baru untuk keamanan
-        if ($request->filled('kata_sandi')) {
-            $validated['password'] = Hash::make($validated['kata_sandi']);
-            // Hapus field kata_sandi karena sudah di-hash
-            unset($validated['kata_sandi']);
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($validated['password']);
         } else {
             // Jika password tidak diubah, hapus dari array validasi
-            unset($validated['kata_sandi']);
             unset($validated['password']);
         }
 
@@ -157,5 +149,43 @@ class AdminController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Pengguna berhasil dihapus!');
+    }
+
+    /**
+     * Serve signature file dengan autentikasi
+     * Hanya admin yang login yang bisa mengakses file tanda tangan
+     */
+    public function serveSignature($filename)
+    {
+        // Handle filename yang mungkin sudah include "tandatangan/" prefix
+        if (str_starts_with($filename, 'tandatangan/')) {
+            // Jika filename sudah include prefix, gunakan langsung
+            $path = $filename;
+            $cleanFilename = basename($filename);
+        } else {
+            // Jika belum ada prefix, tambahkan
+            $path = 'tandatangan/' . $filename;
+            $cleanFilename = $filename;
+        }
+
+        // Cek apakah file ada di disk private
+        if (!Storage::disk('local')->exists($path)) {
+            abort(404, 'File tanda tangan tidak ditemukan');
+        }
+
+        // Ambil file dari disk private
+        $file = Storage::disk('local')->get($path);
+
+        // Tentukan MIME type berdasarkan ekstensi file
+        $mimeType = 'image/png'; // Default untuk PNG
+        if (str_ends_with(strtolower($cleanFilename), '.jpg') || str_ends_with(strtolower($cleanFilename), '.jpeg')) {
+            $mimeType = 'image/jpeg';
+        }
+
+        // Return file dengan header yang tepat
+        return response($file)
+            ->header('Content-Type', $mimeType)
+            ->header('Content-Disposition', 'inline; filename="' . $cleanFilename . '"')
+            ->header('Cache-Control', 'private, max-age=3600'); // Cache selama 1 jam
     }
 }

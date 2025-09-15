@@ -16,12 +16,17 @@ class SignatureHelper
                 $base64Data = substr($signatureData, strpos($signatureData, ',') + 1);
                 $imageData = base64_decode($base64Data);
 
+                // Cek ukuran file maksimal 2MB
+                if (strlen($imageData) > 2097152) { // 2MB in bytes
+                    throw new \Exception('Ukuran file tanda tangan melebihi batas maksimal 2MB.');
+                }
+
                 // Buat nama file yang unik - selalu gunakan format PNG
                 $filename = 'signature_' . time() . '_' . uniqid() . '.png';
                 $path = 'tandatangan/' . $filename;
 
-                // Simpan file
-                Storage::disk('public')->put($path, $imageData);
+                // Simpan file ke disk private
+                Storage::disk('local')->put($path, $imageData);
 
                 Log::info('Tanda tangan berhasil disimpan: ' . $path);
 
@@ -39,8 +44,8 @@ class SignatureHelper
     public static function deleteSignature($path)
     {
         try {
-            if ($path && Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
+            if ($path && Storage::disk('local')->exists($path)) {
+                Storage::disk('local')->delete($path);
                 Log::info('Tanda tangan dihapus: ' . $path);
                 return true;
             }

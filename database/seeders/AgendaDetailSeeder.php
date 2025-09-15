@@ -33,7 +33,6 @@ class AgendaDetailSeeder extends Seeder
                 'jabatan' => $faker->jobTitle,
                 'no_hp' => $faker->numerify('08##########'),
                 'gambar_ttd' => null,
-                'qr_code' => null,
             ]);
         }
     }

@@ -46,12 +46,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Participants Management (AdminController)
     Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
+    Route::get('/participants/search-agenda', [ParticipantController::class, 'searchAgenda'])->name('participants.search-agenda');
     Route::get('/participants/create', [ParticipantController::class, 'create'])->name('participants.create');
     Route::post('/participants', [ParticipantController::class, 'store'])->name('participants.store');
     Route::get('/participants/{participant}', [ParticipantController::class, 'show'])->name('participants.show');
     Route::get('/participants/{participant}/edit', [ParticipantController::class, 'edit'])->name('participants.edit');
     Route::put('/participants/{participant}', [ParticipantController::class, 'update'])->name('participants.update');
     Route::delete('/participants/{participant}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
+
+
     
     // Master Dinas Management
     Route::resource('master-dinas', MasterDinasController::class);
@@ -63,4 +66,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users/{user}/edit', [AdminController::class, 'userEdit'])->name('users.edit');
     Route::put('/users/{user}', [AdminController::class, 'userUpdate'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'userDestroy'])->name('users.destroy');
+
+    // Protected file serving for signatures
+    Route::get('/signature/{filename}', [AdminController::class, 'serveSignature'])->name('signature.serve');
 });

@@ -6,7 +6,7 @@ use App\Models\AgendaDetail;
 use App\Models\Agenda;
 use App\Models\MasterDinas;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use App\Helpers\SignatureHelper;
 
 class AgendaDetailController extends Controller
 {
@@ -54,13 +54,19 @@ class AgendaDetailController extends Controller
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
             'jabatan' => 'required|string',
             'no_hp' => 'required|string|regex:/^[0-9]+$/|min:10|max:13',
-            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-            'qr_code' => 'nullable|string'
+            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048'
         ]);
 
-        if ($request->hasFile('gambar_ttd')) {
-            $path = $request->file('gambar_ttd')->store('tandatangan', 'public');
-            $validated['gambar_ttd'] = $path;
+        if ($request->filled('gambar_ttd') && strpos($request->gambar_ttd, 'data:image/') === 0) {
+            // Simpan tanda tangan menggunakan SignatureHelper
+            try {
+                $signaturePath = SignatureHelper::processSignature($request->gambar_ttd);
+                $validated['gambar_ttd'] = $signaturePath;
+            } catch (\Exception $e) {
+                return back()->withErrors(['gambar_ttd' => 'Gagal menyimpan tanda tangan: ' . $e->getMessage()])->withInput();
+            }
+        } else {
+            $validated['gambar_ttd'] = null;
         }
 
         AgendaDetail::create($validated);
@@ -93,18 +99,23 @@ class AgendaDetailController extends Controller
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
             'jabatan' => 'required|string',
             'no_hp' => 'required|string|regex:/^[0-9]+$/|min:10|max:13',
-            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-            'qr_code' => 'nullable|string'
+            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048'
         ]);
 
-        if ($request->hasFile('gambar_ttd')) {
-            // Hapus file lama jika ada
-            if ($agendaDetail->gambar_ttd && Storage::disk('public')->exists($agendaDetail->gambar_ttd)) {
-                Storage::disk('public')->delete($agendaDetail->gambar_ttd);
+        if ($request->filled('gambar_ttd') && strpos($request->gambar_ttd, 'data:image/') === 0) {
+            // Hapus tanda tangan lama jika ada
+            if ($agendaDetail->gambar_ttd && !str_contains($agendaDetail->gambar_ttd, 'data:image/')) {
+                SignatureHelper::deleteSignature($agendaDetail->gambar_ttd);
             }
-            
-            $path = $request->file('gambar_ttd')->store('tandatangan', 'public');
-            $validated['gambar_ttd'] = $path;
+            // Simpan tanda tangan baru
+            try {
+                $signaturePath = SignatureHelper::processSignature($request->gambar_ttd);
+                $validated['gambar_ttd'] = $signaturePath;
+            } catch (\Exception $e) {
+                return back()->withErrors(['gambar_ttd' => 'Gagal menyimpan tanda tangan: ' . $e->getMessage()])->withInput();
+            }
+        } else {
+            $validated['gambar_ttd'] = $agendaDetail->gambar_ttd;
         }
 
         $agendaDetail->update($validated);
@@ -116,6 +127,11 @@ class AgendaDetailController extends Controller
     // Menghapus resource yang ditentukan dari penyimpanan.
     public function destroy(AgendaDetail $agendaDetail)
     {
+        // Hapus file tanda tangan jika ada dan bukan base64
+        if ($agendaDetail->gambar_ttd && !str_contains($agendaDetail->gambar_ttd, 'data:image/')) {
+            SignatureHelper::deleteSignature($agendaDetail->gambar_ttd);
+        }
+
         $agendaDetail->delete();
 
         return redirect()->route('agenda-detail.index')

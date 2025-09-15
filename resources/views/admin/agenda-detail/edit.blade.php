@@ -113,7 +113,10 @@
                         @if(strpos($agendaDetail->gambar_ttd, 'data:image/') === 0)
                             <img src="{{ $agendaDetail->gambar_ttd }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px; border: 1px solid #ddd; padding: 5px;">
                         @else
-                            <img src="{{ asset('storage/' . $agendaDetail->gambar_ttd) }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px; border: 1px solid #ddd; padding: 5px;">
+                            @php
+                                $filename = basename($agendaDetail->gambar_ttd);
+                            @endphp
+                            <img src="{{ route('admin.signature.serve', $filename) }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px; border: 1px solid #ddd; padding: 5px;">
                         @endif
                     </div>
                 </div>

@@ -34,7 +34,7 @@
 <div class="card shadow mb-4">
     <div class="card-header py-3 bg-primary text-white d-flex justify-content-between align-items-center">
         <div>
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Agenda</h6>
+            <h6 class="m-0 font-weight-bold text-light">Daftar Agenda</h6>
             @if($agendas->hasPages())
                 <small class="text-light">
                     Halaman {{ $agendas->currentPage() }} dari {{ $agendas->lastPage() }}

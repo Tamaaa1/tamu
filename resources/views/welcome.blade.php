@@ -24,7 +24,10 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="container">            
+        <div class="container text-center">
+            <div class="mb-4">
+                <img src="{{ asset('storage/Pemkot.png') }}" alt="Pemkot Logo" style="width: 120px; height: auto;">
+            </div>
             <h1 class="hero-title">
                 <i class="fas fa-calendar-check me-3"></i>
                 Sistem Manajemen Agenda TAMU
@@ -49,7 +52,7 @@
                         </div>
                         <h3 class="feature-title">Manajemen Agenda</h3>
                         <p class="feature-description">
-                            Buat dan kelola agenda dengan mudah. Pilih dinas, set tanggal, dan generate link acara secara otomatis.
+                            Buat dan kelola agenda dengan mudah. Pilih dinas, set tanggal, dan generate link dan QR code acara secara otomatis.
                         </p>
                     </div>
                 </div>
@@ -75,7 +78,7 @@
                         </div>
                         <h3 class="feature-title">QR Code & TTD Digital</h3>
                         <p class="feature-description">
-                            Tanda tangan digital dan QR Code otomatis untuk setiap peserta. Export PDF dengan QR code yang dapat discan.
+                            Tanda tangan digital untuk setiap peserta. Export PDF dengan QR code yang dapat discan.
                         </p>
                     </div>
                 </div>
@@ -118,7 +121,7 @@
                         <span class="fw-bold">4</span>
                     </div>
                     <h5>QR Code & Notif</h5>
-                    <p class="small">Sistem generate QR Code dan notif sukses</p>
+                    <p class="small">Kalau berhasil daftar akan menampilkan pemberitahuan sukses</p>
                 </div>
             </div>
         </div>

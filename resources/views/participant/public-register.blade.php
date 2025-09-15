@@ -13,11 +13,9 @@
 <body>
     <!-- Header Section -->
     <div class="govt-header">
-        <div class="container">
-            <div class="text-center">
-                <h1><i class="fas fa-landmark me-2"></i>Sistem Pendaftaran Peserta</h1>
-                <p>Dinas Komunikasi dan Informatika</p>
-            </div>
+        <div class="container text-center">
+            <img src="{{ asset('storage/Pemkot.png') }}" alt="Pemkot Logo" style="width: 100px; height: auto; margin-bottom: 10px;">
+            <h1><i class=></i>Dinas Komunikasi dan Informatika Kota Pontianak</h1>
         </div>
     </div>
 
@@ -84,12 +82,15 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">
-                                            <i class="fas fa-briefcase"></i>
-                                            Jabatan <span class="text-danger">*</span>
+                                            <i class="fas fa-venus-mars"></i>
+                                            Jenis Kelamin <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan" required 
-                                               placeholder="Masukkan jabatan Anda">
-                                        <div class="error-message" id="jabatan-error"></div>
+                                        <select class="form-select" id="gender" name="gender" required>
+                                            <option value="">Pilih Jenis Kelamin</option>
+                                            <option value="Laki-laki" {{ old('gender') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                            <option value="Perempuan" {{ old('gender') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                        </select>
+                                        <div class="error-message" id="gender-error"></div>
                                     </div>
                                 </div>
                             </div>
@@ -98,15 +99,29 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">
+                                            <i class="fas fa-briefcase"></i>
+                                            Jabatan <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="jabatan" name="jabatan" required
+                                               placeholder="Masukkan jabatan Anda">
+                                        <div class="error-message" id="jabatan-error"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
                                             <i class="fas fa-phone-alt"></i>
                                             Nomor HP <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" class="form-control" id="no_hp" name="no_hp" required 
+                                        <input type="text" class="form-control" id="no_hp" name="no_hp" required
                                                placeholder="Contoh: 081234567890"
                                                pattern="[0-9]{10,13}">
                                         <div class="error-message" id="no_hp-error"></div>
                                     </div>
                                 </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">
@@ -132,8 +147,8 @@
                                 </label>
                                 <small class="text-muted d-block mb-2">Gunakan mouse atau jari untuk membuat tanda tangan di area berikut</small>
                                 
-                                <div class="signature-pad" id="signaturePad">
-                                    <canvas id="signatureCanvas"></canvas>
+                                <div class="signature-pad-container">
+                                    <canvas id="signatureCanvas" width="400" height="200" style="border: 1px solid #ddd; background: white;"></canvas>
                                     <div class="signature-placeholder">
                                         <i class="fas fa-pen"></i>
                                         <p>Klik dan tarik untuk membuat tanda tangan</p>
@@ -193,7 +208,7 @@
     <!-- Footer -->
     <footer class="text-center py-4 text-white mt-5">
         <div class="container">
-            <p>&copy; Copyright Dinas Komunikasi dan Informatika Kota Pontianak.</p>
+            <p>&copy; 2025 Copyright Dinas Komunikasi dan Informatika Kota Pontianak.</p>
         </div>
     </footer>
 

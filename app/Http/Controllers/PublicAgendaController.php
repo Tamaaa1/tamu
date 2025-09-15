@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Helpers\SignatureHelper;
 use App\Traits\Filterable;
 
@@ -111,6 +110,7 @@ class PublicAgendaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|min:2|max:100',
+            'gender' => 'required|in:Laki-laki,Perempuan',
             'jabatan' => 'required|string',
             'no_hp' => 'required|string|regex:/^[0-9]+$/|min:10|max:13',
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
@@ -120,6 +120,8 @@ class PublicAgendaController extends Controller
             'nama.required' => 'Nama harus diisi',
             'nama.min' => 'Nama minimal 2 karakter',
             'nama.max' => 'Nama maksimal 100 karakter',
+            'gender.required' => 'Jenis kelamin harus dipilih',
+            'gender.in' => 'Jenis kelamin tidak valid',
             'jabatan.required' => 'Jabatan harus diisi',
             'no_hp.required' => 'Nomor HP harus diisi',
             'no_hp.regex' => 'Nomor HP hanya boleh berisi angka',
@@ -150,31 +152,17 @@ class PublicAgendaController extends Controller
             }
         }
 
-        // Generate QR Code data (simpan data ini saja)
-        $qrData = json_encode([
-            'nama' => $request->nama,
-            'jabatan' => $request->jabatan,
-            'no_hp' => $request->no_hp,
-            'dinas_id' => $request->dinas_id,
-            'agenda_id' => $request->agenda_id,
-            'timestamp' => now()->toISOString()
-        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-        // Generate QR Code sebagai SVG untuk response
-        $qrCodeSvg = QrCode::size(200)->generate($qrData);
 
-        // Konversi SVG ke base64 untuk display di HTML
-        $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
-
-        // Save participant data - simpan hanya data JSON untuk QR code
+        // Save participant data
         $participant = \App\Models\AgendaDetail::create([
             'agenda_id' => $request->agenda_id,
             'nama' => $request->nama,
+            'gender' => $request->gender,
             'dinas_id' => $request->dinas_id,
             'jabatan' => $request->jabatan,
             'no_hp' => $request->no_hp,
             'gambar_ttd' => $signaturePath,
-            'qr_code' => $qrData
         ]);
 
         // Logging pendaftaran peserta

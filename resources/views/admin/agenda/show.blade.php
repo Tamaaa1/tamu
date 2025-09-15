@@ -28,7 +28,7 @@
                         
                         <h5 class="font-weight-bold">Dinas</h5>
                         <p class="text-muted">
-                            <span class="badge badge-info">
+                            <span class="badge badge-info" style="word-wrap: break-word; white-space: normal; max-width: 300px;">
                                 {{ $agenda->masterDinas->nama_dinas ?? 'N/A' }}
                             </span>
                         </p>
@@ -91,9 +91,9 @@
                                         <td>{{ $participant->nama }}</td>
                                         <td>{{ $participant->jabatan }}</td>
                                         <td>
-                                            <span class="badge badge-info">
-                                                {{ $participant->masterDinas->nama_dinas ?? 'N/A' }}
-                                            </span>
+                                                <span class="badge badge-info d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 300px;">
+                                                    {{ $participant->masterDinas->nama_dinas ?? 'N/A' }}
+                                                </span>
                                         </td>
                                         <td>{{ $participant->no_hp }}</td>
                                     </tr>
