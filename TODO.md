@@ -1,5 +1,1 @@
-- [x] Add Pemkot.png logo to admin layout sidebar
-- [x] Add Pemkot.png logo to agenda PDF export header
-- [x] Add Pemkot.png logo to participants PDF export header
-- [x] Add Pemkot.png logo to public register page header
-- [x] Add Pemkot.png logo to welcome page header
+- [x] Fix undefined variable $agendas in public-register.blade.php by adding $agendas to PublicAgendaController methods

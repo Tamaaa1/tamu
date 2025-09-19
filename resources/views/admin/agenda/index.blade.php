@@ -36,7 +36,7 @@
         <div>
             <h6 class="m-0 font-weight-bold text-light">Daftar Agenda</h6>
             @if($agendas->hasPages())
-                <small class="text-light">
+                <small class="text-light" id="pagination-info">
                     Halaman {{ $agendas->currentPage() }} dari {{ $agendas->lastPage() }}
                     (Total: {{ $agendas->total() }} data)
                 </small>
@@ -47,7 +47,14 @@
         </a>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="text-center" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <p class="mt-2">Memuat data agenda...</p>
+        </div>
+        <div class="table-responsive" id="table-container">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
@@ -61,7 +68,7 @@
                         <th>Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="agendas-tbody">
                     @forelse($agendas as $index => $agenda)
                         <tr>
                             <td>{{ ($agendas->currentPage() - 1) * $agendas->perPage() + $index + 1 }}</td>
@@ -81,7 +88,7 @@
                                     {{ $agenda->koordinator->name ?? $agenda->nama_koordinator }}
                                 </span>
                             </td>
-                            <td>
+                            <td class="link-column">
                                 @if($agenda->link_active)
                                     <a href="{{ route('admin.agenda.qrcode', $agenda) }}" class="btn btn-sm btn-outline-info">
                                         <i class="fas fa-qrcode"></i> QR Code
@@ -101,7 +108,10 @@
                                     <a href="{{ route('admin.agenda.edit', $agenda) }}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('admin.agenda.toggle-link', $agenda) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('admin.agenda.toggle-link', $agenda) }}"
+                                          method="POST"
+                                          class="d-inline toggle-link-form"
+                                          data-agenda-id="{{ $agenda->id }}">
                                         @csrf
                                         @if($agenda->link_active)
                                             <button type="submit" class="btn btn-sm btn-success" title="Nonaktifkan Link & QR Code">
@@ -136,7 +146,7 @@
                     @endforelse
                 </tbody>
             </table>
-            <div class="mt-3 d-flex justify-content-center">
+            <div class="mt-3 d-flex justify-content-center" id="pagination-container">
                 {{ $agendas->links() }}
             </div>
         </div>

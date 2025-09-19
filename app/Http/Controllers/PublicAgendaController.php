@@ -11,10 +11,24 @@ use Illuminate\Support\Facades\Log;
 use App\Helpers\SignatureHelper;
 use App\Traits\Filterable;
 
+/**
+ * Controller untuk mengelola pendaftaran agenda secara publik
+ *
+ * Menangani tampilan dan proses pendaftaran peserta agenda
+ * melalui interface publik tanpa autentikasi.
+ *
+ * @package App\Http\Controllers
+ */
 class PublicAgendaController extends Controller
 {
     use Filterable;
 
+    /**
+     * Membuat instance controller baru
+     *
+     * Menerapkan rate limiting pada method registerParticipant
+     * untuk mencegah spam pendaftaran (10 requests per menit)
+     */
     public function __construct()
     {
         $this->middleware('throttle:10,1')->only(['registerParticipant']);
@@ -52,7 +66,13 @@ class PublicAgendaController extends Controller
                 ->get();
         });
 
-        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
+        $agendas = Cache::remember('active_agendas_all', now()->addMinutes(30), function () {
+            return Agenda::where('link_active', true)
+                ->orderBy('nama_agenda')
+                ->get();
+        });
+
+        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate', 'agendas'));
     }
 
     //Tampilan pendaftaran publik untuk agenda tertentu
@@ -75,7 +95,11 @@ class PublicAgendaController extends Controller
             ->orderBy('nama_agenda')
             ->get();
 
-        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
+        $agendas = Agenda::where('link_active', true)
+            ->orderBy('nama_agenda')
+            ->get();
+
+        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate', 'agendas'));
     }
 
     /**
@@ -100,7 +124,11 @@ class PublicAgendaController extends Controller
             ->orderBy('nama_agenda')
             ->get();
 
-        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
+        $agendas = Agenda::where('link_active', true)
+            ->orderBy('nama_agenda')
+            ->get();
+
+        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate', 'agendas'));
     }
 
     /**

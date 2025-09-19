@@ -30,4 +30,19 @@ class MasterDinas extends Model
     {
         return $this->hasMany(Agenda::class, 'dinas_id', 'dinas_id');
     }
+
+    // Boot method untuk cache invalidation
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Invalidate cache saat master dinas diupdate, create, atau delete
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('master_dinas');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('master_dinas');
+        });
+    }
 }

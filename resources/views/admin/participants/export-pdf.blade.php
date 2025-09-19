@@ -78,7 +78,6 @@
                 <th>Jenis Kelamin</th>
                 <th>Perangkat Daerah</th>
                 <th>Jabatan</th>
-                <th>Telepon</th>
                 <th>Tanda Tangan</th>
             </tr>
         </thead>
@@ -90,7 +89,6 @@
                     <td>{{ $participant->gender}}</td>
                     <td>{{ $participant->masterDinas->nama_dinas ?? 'N/A' }}</td>
                     <td>{{ $participant->jabatan }}</td>
-                    <td>{{ $participant->no_hp }}</td>
                     <td>
                         @if($participant->gambar_ttd)
                             @php

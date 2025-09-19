@@ -27,38 +27,34 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/admin/participants/export-pdf', [AdminController::class, 'exportParticipantsPdf'])->name('participants.export-pdf');
-
-// Admin Routes (Auth Required)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    
-    // Agenda Management
-    Route::resource('agenda', AgendaController::class);
-    Route::get('agenda/{agenda}/export-pdf', [AgendaController::class, 'exportPdf'])->name('agenda.export-pdf');
-    Route::get('agenda/{agenda}/qrcode', [AgendaController::class, 'showQrCode'])->name('agenda.qrcode');
-    Route::get('agenda/{agenda}/export-qrcode-pdf', [AgendaController::class, 'exportQrCodePdf'])->name('agenda.export-qrcode-pdf');
-    Route::post('agenda/{agenda}/toggle-link', [AgendaController::class, 'toggleLinkActive'])->name('agenda.toggle-link');
-    
-    // Agenda Detail Management
-    Route::resource('agenda-detail', AgendaDetailController::class);
-    
-    // Participants Management (AdminController)
+
+    // Participants Management with AJAX support
     Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
+    Route::get('/participants/data', [ParticipantController::class, 'getParticipantsData'])->name('participants.data');
     Route::get('/participants/search-agenda', [ParticipantController::class, 'searchAgenda'])->name('participants.search-agenda');
+
     Route::get('/participants/create', [ParticipantController::class, 'create'])->name('participants.create');
     Route::post('/participants', [ParticipantController::class, 'store'])->name('participants.store');
+
     Route::get('/participants/{participant}', [ParticipantController::class, 'show'])->name('participants.show');
     Route::get('/participants/{participant}/edit', [ParticipantController::class, 'edit'])->name('participants.edit');
     Route::put('/participants/{participant}', [ParticipantController::class, 'update'])->name('participants.update');
     Route::delete('/participants/{participant}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
 
+    // PDF Export (handled by AdminController as per existing routes)
+    Route::get('/participants/export-pdf', [AdminController::class, 'exportParticipantsPdf'])->name('participants.export-pdf');
 
-    
-    // Master Dinas Management
+    // Other existing routes...
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/agenda/data', [AgendaController::class, 'getAgendaData'])->name('agenda.data');
+    Route::resource('agenda', AgendaController::class);
+    Route::get('/agenda/{agenda}/qrcode', [AgendaController::class, 'showQrCode'])->name('agenda.qrcode');
+    Route::get('/agenda/{agenda}/export-qrcode-pdf', [AgendaController::class, 'exportQrCodePdf'])->name('agenda.export-qrcode-pdf');
+    Route::post('/agenda/{agenda}/toggle-link', [AgendaController::class, 'toggleLinkActive'])->name('agenda.toggle-link');
+    Route::resource('agenda-detail', AgendaDetailController::class);
     Route::resource('master-dinas', MasterDinasController::class);
-    
+
     // User Management
     Route::get('/users', [AdminController::class, 'userIndex'])->name('users.index');
     Route::get('/users/create', [AdminController::class, 'userCreate'])->name('users.create');

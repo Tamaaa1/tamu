@@ -9,9 +9,9 @@
     <!-- Fonts & Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700&display=swap" rel="stylesheet">
-    
+
     <!-- Vite Assets -->
-    @vite(['resources/css/app.css', 'resources/css/custom.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/custom.css', 'resources/css/admin-participants.css', 'resources/js/app.js', 'resources/js/admin-participants-filter.js', 'resources/js/admin-agenda-index.js', 'resources/js/admin-participants-index.js'])
 
     <!-- AOS Animation -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
