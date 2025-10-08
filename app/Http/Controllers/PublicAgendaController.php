@@ -8,13 +8,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+<<<<<<< HEAD
 use App\Services\SignatureService;
+=======
+use App\Helpers\SignatureHelper;
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
 use App\Traits\Filterable;
 
+/**
+ * Controller untuk mengelola pendaftaran agenda secara publik
+ *
+ * Menangani tampilan dan proses pendaftaran peserta agenda
+ * melalui interface publik tanpa autentikasi.
+ *
+ * @package App\Http\Controllers
+ */
 class PublicAgendaController extends Controller
 {
     use Filterable;
 
+    /**
+     * Membuat instance controller baru
+     *
+     * Menerapkan rate limiting pada method registerParticipant
+     * untuk mencegah spam pendaftaran (10 requests per menit)
+     */
     public function __construct()
     {
         $this->middleware('throttle:10,1')->only(['registerParticipant']);
@@ -52,7 +70,13 @@ class PublicAgendaController extends Controller
                 ->get();
         });
 
-        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
+        $agendas = Cache::remember('active_agendas_all', now()->addMinutes(30), function () {
+            return Agenda::where('link_active', true)
+                ->orderBy('nama_agenda')
+                ->get();
+        });
+
+        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate', 'agendas'));
     }
 
     //Tampilan pendaftaran publik untuk agenda tertentu
@@ -75,7 +99,11 @@ class PublicAgendaController extends Controller
             ->orderBy('nama_agenda')
             ->get();
 
-        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
+        $agendas = Agenda::where('link_active', true)
+            ->orderBy('nama_agenda')
+            ->get();
+
+        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate', 'agendas'));
     }
 
     /**
@@ -100,7 +128,11 @@ class PublicAgendaController extends Controller
             ->orderBy('nama_agenda')
             ->get();
 
-        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate'));
+        $agendas = Agenda::where('link_active', true)
+            ->orderBy('nama_agenda')
+            ->get();
+
+        return view('participant.public-register', compact('agenda', 'dinas', 'agendasOnSameDate', 'agendas'));
     }
 
     /**
@@ -206,6 +238,7 @@ class PublicAgendaController extends Controller
             ], 500);
         }
 
+<<<<<<< HEAD
         // Determine dinas_id to use
         $finalDinasId = $request->dinas_id;
         if ($request->dinas_id === 'other') {
@@ -246,12 +279,20 @@ class PublicAgendaController extends Controller
             $finalDinasId = $request->dinas_id;
         }
 
+=======
+
+
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
         // Save participant data
         $participant = \App\Models\AgendaDetail::create([
             'agenda_id' => $request->agenda_id,
             'nama' => $request->nama,
             'gender' => $request->gender,
+<<<<<<< HEAD
             'dinas_id' => $finalDinasId,
+=======
+            'dinas_id' => $request->dinas_id,
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
             'jabatan' => $request->jabatan,
             'no_hp' => $request->no_hp,
             'gambar_ttd' => $signaturePath,

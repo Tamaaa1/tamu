@@ -9,21 +9,29 @@
     <!-- Fonts & Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700&display=swap" rel="stylesheet">
-    
+
     <!-- Vite Assets -->
-    @vite(['resources/css/app.css', 'resources/css/custom.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/custom.css', 'resources/css/admin-participants.css', 'resources/js/app.js', 'resources/js/admin-participants-filter.js', 'resources/js/admin-agenda-index.js', 'resources/js/admin-participants-index.js'])
 
     <!-- AOS Animation -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
 
+<<<<<<< HEAD
     <!-- jQuery UI CSS -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+=======
+<!-- jQuery UI CSS -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
 
-    @stack('styles')
+<!-- Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+
+@stack('styles')
 </head>
 
 <body id="page-top">
@@ -151,6 +159,7 @@
 <!-- Scroll Top -->
 <a class="scroll-to-top rounded" href="#page-top"><i class="fas fa-angle-up"></i></a>
 
+<<<<<<< HEAD
 <!-- Scripts - URUTAN PENTING! -->
 <!-- 1. jQuery HARUS PERTAMA -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -162,6 +171,15 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <!-- 4. AOS Animation -->
+=======
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<!-- Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 <script>AOS.init();</script>
 

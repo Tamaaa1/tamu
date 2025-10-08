@@ -15,8 +15,13 @@ class SignaturePadManager {
 
         this.canvas = canvasElement;
         this.signaturePad = new SignaturePad(this.canvas, {
+<<<<<<< HEAD
             minWidth: 2.0,
             maxWidth: 2.0,
+=======
+            minWidth: 2.5,
+            maxWidth: 4,
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
             penColor: "rgb(0, 0,0)",
             backgroundColor: "rgba(255, 255, 255, 0)"  // Transparent background
         });

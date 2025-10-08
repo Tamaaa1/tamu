@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TODO: Add AJAX Pagination to Agenda Detail Page
 
 ## Current Status
@@ -64,3 +65,6 @@
 - [x] "No query results for model [App\Models\Agenda] 67" - Now returns proper 404 response
 - [x] AJAX delete requests now work correctly even when records are already deleted
 - [x] Better user feedback with toast notifications for all delete operations
+=======
+- [x] Fix undefined variable $agendas in public-register.blade.php by adding $agendas to PublicAgendaController methods
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614

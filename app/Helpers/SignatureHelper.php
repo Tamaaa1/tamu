@@ -5,9 +5,30 @@ namespace App\Helpers;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Helper class untuk mengelola tanda tangan digital
+ *
+ * Menangani proses penyimpanan, validasi, dan penghapusan
+ * file tanda tangan digital dalam format base64.
+ *
+ * @package App\Helpers
+ */
 class SignatureHelper
 {
+<<<<<<< HEAD
     // Proses dan simpan gambar tanda tangan base64 dengan optimasi
+=======
+    /**
+     * Proses dan simpan gambar tanda tangan base64
+     *
+     * Mengkonversi data base64 menjadi file PNG dan menyimpannya
+     * ke storage private dengan validasi ukuran dan format.
+     *
+     * @param string $signatureData Data tanda tangan dalam format base64
+     * @return string|null Path file tanda tangan yang disimpan atau null jika gagal
+     * @throws \Exception Jika terjadi kesalahan dalam pemrosesan
+     */
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
     public static function processSignature($signatureData)
     {
         try {
@@ -21,15 +42,23 @@ class SignatureHelper
                     throw new \Exception('Ukuran file tanda tangan melebihi batas maksimal 2MB.');
                 }
 
+<<<<<<< HEAD
                 // Optimasi gambar menggunakan GD library
                 $optimizedImageData = self::optimizeSignatureImage($imageData);
 
+=======
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
                 // Buat nama file yang unik - selalu gunakan format PNG
                 $filename = 'signature_' . time() . '_' . uniqid() . '.png';
                 $path = 'tandatangan/' . $filename;
 
+<<<<<<< HEAD
                 // Simpan file yang sudah dioptimasi ke disk private
                 Storage::disk('local')->put($path, $optimizedImageData);
+=======
+                // Simpan file ke disk private
+                Storage::disk('local')->put($path, $imageData);
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
 
                 Log::info('Tanda tangan berhasil disimpan dan dioptimasi: ' . $path);
 
@@ -43,6 +72,7 @@ class SignatureHelper
         }
     }
 
+<<<<<<< HEAD
     // Optimasi gambar tanda tangan dengan resize dan kompresi
     private static function optimizeSignatureImage($imageData)
     {
@@ -106,6 +136,17 @@ class SignatureHelper
     }
 
     // Hapus file tanda tangan
+=======
+    /**
+     * Hapus file tanda tangan dari storage
+     *
+     * Menghapus file tanda tangan dari disk storage private
+     * dan mencatat aktivitas penghapusan ke log.
+     *
+     * @param string $path Path file tanda tangan yang akan dihapus
+     * @return bool True jika berhasil dihapus, false jika gagal
+     */
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
     public static function deleteSignature($path)
     {
         try {

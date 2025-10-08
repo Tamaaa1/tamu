@@ -184,6 +184,7 @@
     }
 </style>
 <body>
+<<<<<<< HEAD
     <div class="container">
         <div class="header-banner">
             <div class="header-title">
@@ -207,6 +208,30 @@
                     <div class="info-value">
                         <span class="badge">{{ $agenda->masterDinas->nama_dinas ?? 'N/A' }}</span>
                     </div>
+=======
+    <div class="header">
+        <div class="text-center mb-3">
+            <img src="{{ public_path('storage/Pemkot.png') }}" alt="Pemkot Logo" style="width: 80px; height: auto;">
+        </div>
+        <h1>QR CODE AGENDA</h1>
+        <h2>{{ $agenda->nama_agenda }}</h2>
+    </div>
+
+    <div class="content">
+        <div class="info-section">
+            <div class="info-row">
+                <div class="info-label">Nama Agenda:</div>
+                <div class="info-value">{{ $agenda->nama_agenda }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Tanggal:</div>
+                <div class="info-value">{{ \Carbon\Carbon::parse($agenda->tanggal_agenda)->format('d/m/Y') }}</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Dinas:</div>
+                <div class="info-value">
+                    <span class="badge" style="word-wrap: break-word; white-space: normal; max-width: 300px;">{{ $agenda->masterDinas->nama_dinas ?? 'N/A' }}</span>
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
                 </div>
             </div>
 

@@ -100,6 +100,18 @@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
+                    <label for="gender" class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
+                    <select class="form-select @error('gender') is-invalid @enderror" id="gender" name="gender" required>
+                        <option value="">Pilih Jenis Kelamin</option>
+                        <option value="Laki-laki" {{ old('gender') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="Perempuan" {{ old('gender') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                    </select>
+                    @error('gender')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-md-6 mb-3">
                     <label for="jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan') }}" required>
                     @error('jabatan')

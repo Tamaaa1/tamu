@@ -10,6 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+<<<<<<< HEAD
+=======
+use Illuminate\Support\Str;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
 
 class AdminController extends Controller
 {
@@ -56,6 +61,7 @@ class AdminController extends Controller
         ));
     }
 
+<<<<<<< HEAD
     /**
      * Export participants data to PDF
      *
@@ -66,6 +72,35 @@ class AdminController extends Controller
     {
         $exportService = new ParticipantsExportService();
         return $exportService->exportPdf($request);
+=======
+    public function exportParticipantsPdf(Request $request)
+    {
+        $query = AgendaDetail::with(['agenda', 'masterDinas'])->orderBy('created_at', 'desc');
+
+        // Apply filters using trait
+        $query = $this->applyDateFilters($query, $request);
+        $query = $this->applyAgendaFilter($query, $request);
+
+        // Batasi jumlah data untuk export PDF
+        $participants = $query->limit(500)->get();
+
+        // Get agenda filter if applied
+        $agendaFilter = null;
+        if ($request->filled('agenda_id')) {
+            $agendaFilter = Agenda::find($request->agenda_id);
+        }
+
+        // Konfigurasi DomPDF
+        $pdf = PDF::setOptions([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true,
+            'dpi' => 96,
+            'defaultFont' => 'sans-serif'
+        ])->loadView('admin.participants.export-pdf', compact('participants', 'agendaFilter'));
+
+        $filename = 'peserta_' . date('Y-m-d_H-i-s') . '.pdf';
+        return $pdf->download($filename);
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
     }
 
     // User Management Methods

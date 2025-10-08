@@ -91,12 +91,34 @@
                                         <label class="form-label">
                                             <i class="fas fa-briefcase"></i>
                                             Jabatan <span class="text-danger">*</span>
+<<<<<<< HEAD
+                                        </label>
+                                        <input type="text" class="form-control" id="jabatan" name="jabatan" required
+                                               placeholder="Masukkan jabatan Anda">
+                                        <div class="error-message" id="jabatan-error"></div>
+=======
                                         </label>
                                         <input type="text" class="form-control" id="jabatan" name="jabatan" required
                                                placeholder="Masukkan jabatan Anda">
                                         <div class="error-message" id="jabatan-error"></div>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fas fa-phone-alt"></i>
+                                            Nomor HP <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control" id="no_hp" name="no_hp" required
+                                               placeholder="Contoh: 081234567890"
+                                               pattern="[0-9]{10,13}">
+                                        <div class="error-message" id="no_hp-error"></div>
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">

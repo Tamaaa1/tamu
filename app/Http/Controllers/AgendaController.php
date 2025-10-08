@@ -15,16 +15,37 @@ use Illuminate\Support\Facades\Cache;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 
+/**
+ * Controller untuk mengelola agenda rapat/acara
+ *
+ * Menangani operasi CRUD agenda, QR code generation,
+ * dan manajemen status aktif/nonaktif agenda.
+ *
+ * @package App\Http\Controllers
+ */
 class AgendaController extends Controller
 {
     use Filterable;
 
+    /**
+     * Membuat instance controller baru
+     *
+     * Menerapkan middleware autentikasi untuk semua method
+     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    // Menampilkan daftar agenda dengan filter
+    /**
+     * Menampilkan daftar agenda dengan filter tanggal
+     *
+     * Mengambil data agenda beserta relasi master dinas dan koordinator,
+     * menerapkan filter tanggal, dan menampilkan dengan pagination.
+     *
+     * @param Request $request Request object yang berisi parameter filter
+     * @return \Illuminate\View\View View daftar agenda
+     */
     public function index(Request $request)
     {
         // Membuat query untuk mengambil data agenda beserta relasi master dinas dan koordinator
@@ -40,17 +61,33 @@ class AgendaController extends Controller
         return view('admin.agenda.index', compact('agendas'));
     }
 
-    // Form tambah agenda baru
+    /**
+     * Menampilkan form untuk membuat agenda baru
+     *
+     * Mengambil data master dinas dari cache dan menampilkan form create agenda.
+     *
+     * @return \Illuminate\View\View View form create agenda
+     */
     public function create()
     {
-        // Mengambil semua data master dinas untuk dropdown pada form
-        $dinas = MasterDinas::all();
+        // Mengambil semua data master dinas untuk dropdown pada form dengan caching
+        $dinas = Cache::remember('master_dinas', 3600, function () { // Cache 1 jam
+            return MasterDinas::all();
+        });
 
         // Mengembalikan view form tambah agenda dengan data master dinas
         return view('admin.agenda.create', compact('dinas'));
     }
 
-    // Simpan agenda baru
+    /**
+     * Menyimpan agenda baru ke database
+     *
+     * Melakukan validasi input, mengatur koordinator otomatis,
+     * dan membuat agenda baru dengan cache invalidation.
+     *
+     * @param Request $request Data request dari form
+     * @return \Illuminate\Http\RedirectResponse Redirect ke index dengan pesan sukses
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -67,6 +104,9 @@ class AgendaController extends Controller
 
         Agenda::create($validated);
 
+        // Clear cache agendas setelah create
+        Cache::forget('agendas_all');
+
         return redirect()->route('admin.agenda.index')
             ->with('success', 'Agenda berhasil dibuat!');
     }
@@ -80,7 +120,9 @@ class AgendaController extends Controller
 
     public function edit(Agenda $agenda)
     {
-        $dinas = MasterDinas::all();
+        $dinas = Cache::remember('master_dinas', 3600, function () { // Cache 1 jam
+            return MasterDinas::all();
+        });
         return view('admin.agenda.edit', compact('agenda', 'dinas'));
     }
 
@@ -99,6 +141,9 @@ class AgendaController extends Controller
 
         $agenda->update($validated);
 
+        // Clear cache agendas setelah update
+        Cache::forget('agendas_all');
+
         return redirect()->route('admin.agenda.index')
             ->with('success', 'Agenda berhasil diupdate!');
     }
@@ -109,6 +154,7 @@ class AgendaController extends Controller
             $agenda = Agenda::findOrFail($id);
             $agenda->delete();
 
+<<<<<<< HEAD
             // Check if this is an AJAX request
             if ($request->ajax()) {
                 return response()->json([
@@ -141,17 +187,87 @@ class AgendaController extends Controller
             return redirect()->route('admin.agenda.index')
                 ->with('error', 'Terjadi kesalahan saat menghapus agenda.');
         }
+=======
+        // Clear cache agendas setelah delete
+        Cache::forget('agendas_all');
+
+        return redirect()->route('admin.agenda.index')
+            ->with('success', 'Agenda berhasil dihapus!');
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
     }
 
     // Toggle link active status
     public function toggleLinkActive(Agenda $agenda)
-    {
-        $agenda->update(['link_active' => !$agenda->link_active]);
+{
+    try {
+        // Toggle status link_active
+        $newStatus = !$agenda->link_active;
+        $agenda->update(['link_active' => $newStatus]);
 
+<<<<<<< HEAD
         return redirect()->route('admin.agenda.index');
     }
+=======
+        // Clear cache agendas setelah toggle status
+        Cache::forget('agendas_all');
 
-    // Tampilkan QR code untuk agenda
+        // Prepare response data
+        $responseData = [
+            'success' => true,
+            'link_active' => $newStatus,
+            'message' => $newStatus 
+                ? 'Link agenda berhasil diaktifkan!' 
+                : 'Link agenda berhasil dinonaktifkan!'
+        ];
+
+        // Jika link diaktifkan, sertakan URL QR Code
+        if ($newStatus) {
+            $responseData['qrcode_url'] = route('admin.agenda.qrcode', $agenda);
+        }
+
+        // Check if request is AJAX
+        if (request()->ajax()) {
+            return response()->json($responseData);
+        }
+
+        // Fallback untuk non-AJAX request
+        return redirect()->route('admin.agenda.index')
+            ->with('success', $responseData['message']);
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
+
+    } catch (\Exception $e) {
+        // Log error untuk debugging
+        Log::error('Error toggling agenda link status: ' . $e->getMessage(), [
+            'agenda_id' => $agenda->id,
+            'user_id' => Auth::id(),
+            'error' => $e->getTraceAsString()
+        ]);
+
+        $errorMessage = 'Terjadi kesalahan saat mengubah status link agenda.';
+
+        // Check if request is AJAX
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => $errorMessage
+            ], 500);
+        }
+
+        // Fallback untuk non-AJAX request
+        return redirect()->route('admin.agenda.index')
+            ->with('error', $errorMessage);
+    }
+}
+
+    /**
+     * Menampilkan halaman QR code untuk agenda
+     *
+     * Menggenerate QR code untuk URL pendaftaran publik agenda
+     * dan menampilkan halaman dengan QR code tersebut.
+     *
+     * @param Agenda $agenda Instance agenda yang akan ditampilkan QR codenya
+     * @return \Illuminate\View\View View halaman QR code
+     */
     public function showQrCode(Agenda $agenda)
     {
         // Memuat relasi master dinas dan koordinator untuk agenda
@@ -171,7 +287,15 @@ class AgendaController extends Controller
         return view('admin.agenda.qrcode', compact('agenda', 'qrCode', 'publicUrl'));
     }
 
-    // Export QR Code ke PDF dan simpan link registrasi ke database
+    /**
+     * Mengekspor QR code agenda ke file PDF
+     *
+     * Menggenerate QR code, menyimpan link registrasi ke database,
+     * dan mengekspor ke file PDF untuk didownload.
+     *
+     * @param Agenda $agenda Instance agenda yang akan diekspor QR codenya
+     * @return \Illuminate\Http\Response File PDF download response
+     */
     public function exportQrCodePdf(Agenda $agenda)
     {
         // Memuat relasi master dinas dan koordinator untuk agenda
@@ -205,6 +329,7 @@ class AgendaController extends Controller
         // Download file PDF dengan nama khusus
         return $pdf->download('qrcode-agenda-' . $agenda->id . '.pdf');
     }
+<<<<<<< HEAD
 
     /**
      * AJAX Search method untuk dynamic loading dropdown
@@ -461,3 +586,7 @@ class AgendaController extends Controller
         }
     }
 }
+=======
+}
+    
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614

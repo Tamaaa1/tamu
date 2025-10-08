@@ -1,0 +1,30 @@
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.dropdown-item mark {
+    background-color: #fff3cd !important;
+    color: #856404;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.dropdown-item.active mark {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    color: white;
+}
+
+#agenda_search:focus {
+    box-shadow: none;
+    border-color: #80bdff;
+}
+
+.dropdown-menu {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}

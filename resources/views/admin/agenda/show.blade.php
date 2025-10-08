@@ -66,6 +66,7 @@
             </div>
         </div>
         
+<<<<<<< HEAD
 <!-- Participants Section -->
 <div class="card shadow mb-4">
     <div class="card-header py-3 bg-primary text-white">
@@ -75,6 +76,49 @@
         <div id="participants_loading" style="display:none;" class="text-center py-4">
             <div class="spinner-border text-primary" role="status">
                 <span class="sr-only">Loading...</span>
+=======
+        <!-- Participants Section -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 bg-primary text-white">
+                <h6 class="m-0 font-weight-bold text-white">Daftar Peserta ({{ $agenda->agendaDetail->count() }})</h6>
+            </div>
+            <div class="card-body">
+                @if($agenda->agendaDetail->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama</th>
+                                    <th>Jabatan</th>
+                                    <th>Dinas</th>
+                                    <th>No HP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($agenda->agendaDetail as $index => $participant)
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $participant->nama }}</td>
+                                        <td>{{ $participant->jabatan }}</td>
+                                        <td>
+                                                <span class="badge badge-info d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 300px;">
+                                                    {{ $participant->masterDinas->nama_dinas ?? 'N/A' }}
+                                                </span>
+                                        </td>
+                                        <td>{{ $participant->no_hp }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <p>Belum ada peserta yang terdaftar untuk agenda ini</p>
+                    </div>
+                @endif
+>>>>>>> 284e251ce60564e812888c40ae43c01b7d4a7614
             </div>
             <p>Memuat data peserta...</p>
         </div>
