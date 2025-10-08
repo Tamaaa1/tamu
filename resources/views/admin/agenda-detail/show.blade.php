@@ -17,7 +17,7 @@
         <h6 class="m-0 font-weight-bold text-primary">Informasi Agenda</h6>
     </div>
     <div class="card-body">
-        <p><strong>Dinas:</strong> {{ $agenda->masterDinas->nama_dinas }}</p>
+        <p><strong>Instansi:</strong> {{ $agenda->masterDinas->nama_dinas }}</p>
         <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($agenda->tanggal_agenda)->format('d/m/Y') }}</p>
         <p><strong>Koordinator:</strong> {{ $agenda->koordinator->name ?? $agenda->nama_koordinator }}</p>
         <p><strong>Link Acara:</strong> 
@@ -43,7 +43,7 @@
                         <th>No</th>
                         <th>Nama</th>
                         <th>Jabatan</th>
-                        <th>Dinas</th>
+                        <th>Instansi</th>
                         <th>No HP</th>
                         <th>Tanggal Daftar</th>
                         <th>Aksi</th>

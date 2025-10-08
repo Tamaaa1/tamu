@@ -6,3 +6,6 @@ import 'bootstrap';
 import 'jquery-easing';
 import 'startbootstrap-sb-admin-2/js/sb-admin-2.min.js';
 
+// Import custom components
+import './components/NotificationManager';
+import './components/LoadingManager';

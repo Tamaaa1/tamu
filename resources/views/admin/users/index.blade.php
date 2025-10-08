@@ -43,7 +43,7 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $user->name }}</td>
-                            <td>{{ $user->email }}</td>
+                            <td>{{ $user->username }}</td>
                             <td>
                                 <span class="badge badge-{{ $user->role == 'admin' ? 'primary' : 'secondary' }}">
                                     {{ ucfirst($user->role) }}

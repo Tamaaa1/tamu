@@ -14,7 +14,7 @@
                         @method('PUT')
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nama_dinas" class="form-label">Nama Dinas <span class="text-danger">*</span></label>
+                                <label for="nama_dinas" class="form-label">Nama Instansi <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="nama_dinas" name="nama_dinas" value="{{ old('nama_dinas', $masterDina->nama_dinas) }}" required>
                             </div>
                             <div class="col-md-6 mb-3">

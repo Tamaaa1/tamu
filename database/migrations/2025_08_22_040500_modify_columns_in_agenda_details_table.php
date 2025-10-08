@@ -12,9 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('agenda_details', function (Blueprint $table) {
-            // Ubah qr_code menjadi longText untuk menyimpan base64
-            $table->longText('qr_code')->nullable()->change();
-            
             // Ubah gambar_ttd menjadi longText untuk menyimpan base64 (jika belum)
             $table->longText('gambar_ttd')->nullable()->change();
         });
@@ -26,7 +23,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('agenda_details', function (Blueprint $table) {
-            $table->string('qr_code')->nullable()->change();
             $table->string('gambar_ttd')->nullable()->change();
         });
     }

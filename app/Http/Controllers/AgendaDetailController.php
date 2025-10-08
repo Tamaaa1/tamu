@@ -6,7 +6,8 @@ use App\Models\AgendaDetail;
 use App\Models\Agenda;
 use App\Models\MasterDinas;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use App\Services\SignatureService;
 
 class AgendaDetailController extends Controller
 {
@@ -15,25 +16,6 @@ class AgendaDetailController extends Controller
     {
         $query = AgendaDetail::with(['agenda', 'masterDinas'])->latest();
 
-        // Filter berdasarkan tanggal, bulan, dan tahun
-        if ($request->filled('tanggal')) {
-            $query->whereHas('agenda', function($q) use ($request) {
-                $q->whereDay('tanggal_agenda', $request->tanggal);
-            });
-        }
-        
-        if ($request->filled('bulan')) {
-            $query->whereHas('agenda', function($q) use ($request) {
-                $q->whereMonth('tanggal_agenda', $request->bulan);
-            });
-        }
-        
-        if ($request->filled('tahun')) {
-            $query->whereHas('agenda', function($q) use ($request) {
-                $q->whereYear('tanggal_agenda', $request->tahun);
-            });
-        }
-
         $participants = $query->get();
         return view('admin.agenda-detail.index', compact('participants'));
     }
@@ -41,8 +23,16 @@ class AgendaDetailController extends Controller
      // Menampilkan formulir untuk membuat resource baru.
     public function create()
     {
-        $agendas = Agenda::all();
-        $dinas = MasterDinas::all();
+        // Cache agendas for 30 minutes (form data doesn't need real-time updates)
+        $agendas = Cache::remember('agendas_for_participants_form', now()->addMinutes(30), function () {
+            return Agenda::all();
+        });
+
+        // Cache master dinas for 1 hour (master data changes infrequently)
+        $dinas = Cache::remember('master_dinas_all', now()->addHour(), function () {
+            return MasterDinas::all();
+        });
+
         return view('agenda-detail.create', compact('agendas', 'dinas'));
     }
 
@@ -54,13 +44,15 @@ class AgendaDetailController extends Controller
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
             'jabatan' => 'required|string',
             'no_hp' => 'required|string|regex:/^[0-9]+$/|min:10|max:13',
-            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-            'qr_code' => 'nullable|string'
+            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048'
         ]);
 
-        if ($request->hasFile('gambar_ttd')) {
-            $path = $request->file('gambar_ttd')->store('tandatangan', 'public');
-            $validated['gambar_ttd'] = $path;
+        // Handle signature pad data (base64 image)
+        try {
+            $signatureService = new SignatureService();
+            $validated['gambar_ttd'] = $signatureService->validateAndProcessSignature($request->gambar_ttd);
+        } catch (\Exception $e) {
+            return back()->withErrors(['gambar_ttd' => $e->getMessage()])->withInput();
         }
 
         AgendaDetail::create($validated);
@@ -79,8 +71,16 @@ class AgendaDetailController extends Controller
     // Menampilkan Form untuk mengedit resource yang ditentukan.
     public function edit(AgendaDetail $agendaDetail)
     {
-        $agendas = Agenda::all();
-        $dinas = MasterDinas::all();
+        // Cache agendas for 30 minutes (form data doesn't need real-time updates)
+        $agendas = Cache::remember('agendas_for_participants_form', now()->addMinutes(30), function () {
+            return Agenda::all();
+        });
+
+        // Cache master dinas for 1 hour (master data changes infrequently)
+        $dinas = Cache::remember('master_dinas_all', now()->addHour(), function () {
+            return MasterDinas::all();
+        });
+
         return view('agenda-detail.edit', compact('agendaDetail', 'agendas', 'dinas'));
     }
 
@@ -93,18 +93,16 @@ class AgendaDetailController extends Controller
             'dinas_id' => 'required|exists:master_dinas,dinas_id',
             'jabatan' => 'required|string',
             'no_hp' => 'required|string|regex:/^[0-9]+$/|min:10|max:13',
-            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-            'qr_code' => 'nullable|string'
+            'gambar_ttd' => 'nullable|image|mimes:png,jpg,jpeg|max:2048'
         ]);
 
-        if ($request->hasFile('gambar_ttd')) {
-            // Hapus file lama jika ada
-            if ($agendaDetail->gambar_ttd && Storage::disk('public')->exists($agendaDetail->gambar_ttd)) {
-                Storage::disk('public')->delete($agendaDetail->gambar_ttd);
-            }
-            
-            $path = $request->file('gambar_ttd')->store('tandatangan', 'public');
-            $validated['gambar_ttd'] = $path;
+        // Handle signature pad data (base64 image)
+        try {
+            $signatureService = new SignatureService();
+            $processedSignature = $signatureService->validateAndProcessSignature($request->gambar_ttd, $agendaDetail->gambar_ttd);
+            $validated['gambar_ttd'] = $processedSignature ?? $agendaDetail->gambar_ttd;
+        } catch (\Exception $e) {
+            return back()->withErrors(['gambar_ttd' => $e->getMessage()])->withInput();
         }
 
         $agendaDetail->update($validated);
@@ -116,6 +114,10 @@ class AgendaDetailController extends Controller
     // Menghapus resource yang ditentukan dari penyimpanan.
     public function destroy(AgendaDetail $agendaDetail)
     {
+        // Hapus file tanda tangan jika ada
+        $signatureService = new SignatureService();
+        $signatureService->deleteSignature($agendaDetail->gambar_ttd);
+
         $agendaDetail->delete();
 
         return redirect()->route('agenda-detail.index')

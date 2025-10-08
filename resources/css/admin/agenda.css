@@ -1,0 +1,262 @@
+/* Agenda Management Page Styles */
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.dropdown-item mark {
+    background-color: #fff3cd !important;
+    color: #856404;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.dropdown-item.active mark {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    color: white;
+}
+
+#agenda_search:focus {
+    box-shadow: none;
+    border-color: #80bdff;
+}
+
+.dropdown-menu {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+.badge-sm {
+    font-size: 0.65rem;
+}
+
+.font-weight-medium {
+    font-weight: 500;
+}
+
+.alert-sm {
+    font-size: 0.8rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Agenda specific styles */
+.agenda-option {
+    transition: all 0.2s ease;
+}
+
+.agenda-option:hover {
+    background-color: #f8f9fa;
+    transform: translateX(2px);
+}
+
+.agenda-option.active {
+    background-color: #007bff;
+    color: white;
+    transform: translateX(0);
+}
+
+.agenda-option .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.agenda-option small {
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.agenda-option.active small {
+    opacity: 1;
+}
+
+/* Table enhancements */
+.table th {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table .badge {
+    font-size: 0.75rem;
+}
+
+/* Loading states */
+.text-center.py-4 {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Pagination styling */
+.pagination .page-link {
+    color: #007bff;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.pagination .page-link:hover {
+    color: #0056b3;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+/* Card header styling */
+.card-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.card-header .btn-light:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+
+    .dropdown-menu {
+        max-height: 200px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .card-header .d-flex {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .card-header .btn {
+        width: 100%;
+    }
+}
+
+/* Animation for smooth transitions */
+.table {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Status badges */
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-secondary {
+    background-color: #6c757d;
+}
+
+.badge-info {
+    background-color: #17a2b8;
+}
+
+/* Empty state styling */
+.text-center.text-muted.py-4 {
+    color: #6c757d !important;
+}
+
+.text-center.text-muted.py-4 i {
+    opacity: 0.5;
+}
+
+.text-center.text-muted.py-4 p {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Form styling */
+.form-control:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.input-group-append .btn {
+    border-left: 0;
+}
+
+.input-group-append .btn:hover {
+    z-index: 3;
+}
+
+/* Alert styling */
+.alert {
+    border: none;
+    border-radius: 0.375rem;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Button enhancements */
+.btn-outline-info {
+    color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-outline-info:hover {
+    color: #fff;
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-light {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.btn-light:hover {
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}

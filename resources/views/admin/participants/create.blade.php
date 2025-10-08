@@ -1,6 +1,25 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Tambah Peserta')
+@push('styles')
+<!-- Choices.js CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<style>
+    .choices__inner {
+        min-height: 38px;
+        padding: 5px 7.5px 3.75px;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        background-color: #fff;
+    }
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+        background-color: #4e73df;
+    }
+    .is-invalid + .choices .choices__inner {
+        border-color: #e74a3b;
+    }
+</style>
+@endpush
 
 @section('content')
 <!-- Page Heading -->
@@ -23,10 +42,12 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="agenda_id" class="form-label">Agenda <span class="text-danger">*</span></label>
-                    <select class="form-select @error('agenda_id') is-invalid @enderror" id="agenda_id" name="agenda_id" required>
+                    <select class="form-select @error('agenda_id') is-invalid @enderror"
+                             id="agenda_id" name="agenda_id" required>
                         <option value="">Pilih Agenda</option>
                         @foreach($agendas as $agenda)
-                            <option value="{{ $agenda->id }}" {{ old('agenda_id') == $agenda->id ? 'selected' : '' }}>
+                            <option value="{{ $agenda->id }}" 
+                                    {{ old('agenda_id') == $agenda->id ? 'selected' : '' }}>
                                 {{ $agenda->nama_agenda }} ({{ \Carbon\Carbon::parse($agenda->tanggal_agenda)->format('d/m/Y') }})
                             </option>
                         @endforeach
@@ -36,19 +57,22 @@
                     @enderror
                 </div>
                 
-                <div class="col-md-6 mb-3">
-                    <label for="dinas_id" class="form-label">Dinas <span class="text-danger">*</span></label>
-                    <select class="form-select @error('dinas_id') is-invalid @enderror" id="dinas_id" name="dinas_id" required>
-                        <option value="">Pilih Dinas</option>
-                        @foreach($dinas as $dinasItem)
-                            <option value="{{ $dinasItem->dinas_id }}" {{ old('dinas_id') == $dinasItem->dinas_id ? 'selected' : '' }}>
-                                {{ $dinasItem->nama_dinas }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('dinas_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="dinas_id">Instansi <span class="text-danger">*</span></label>
+                        <select class="form-select @error('dinas_id') is-invalid @enderror"
+                                id="dinas_id" name="dinas_id" required>
+                            @foreach($dinas as $dina)
+                                <option value="{{ $dina->dinas_id }}"
+                                        {{ old('dinas_id') == $dina->dinas_id ? 'selected' : '' }}>
+                                    {{ $dina->nama_dinas }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('dinas_id')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
             </div>
             
@@ -60,7 +84,21 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-                
+
+                <div class="col-md-6 mb-3">
+                    <label for="gender" class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
+                    <select class="form-select @error('gender') is-invalid @enderror" id="gender" name="gender" required>
+                        <option value="">Pilih Jenis Kelamin</option>
+                        <option value="Laki-laki" {{ old('gender') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="Perempuan" {{ old('gender') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                    </select>
+                    @error('gender')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" value="{{ old('jabatan') }}" required>
@@ -68,9 +106,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
-            </div>
-            
-            <div class="row">
+
                 <div class="col-md-6 mb-3">
                     <label for="no_hp" class="form-label">No HP <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('no_hp') is-invalid @enderror" id="no_hp" name="no_hp" value="{{ old('no_hp') }}" required>
@@ -200,3 +236,52 @@
     }
 </style>
 @endsection
+
+@push('scripts')
+<!-- Choices.js -->
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Choices for Instansi (dinas_id)
+        const dinasElement = document.getElementById('dinas_id');
+
+        if (dinasElement) {
+            const dinasChoices = new Choices(dinasElement, {
+                searchEnabled: true,
+                searchPlaceholderValue: 'Ketik untuk mencari...',
+                itemSelectText: 'Klik untuk memilih',
+                noResultsText: 'Tidak ada hasil ditemukan',
+                noChoicesText: 'Tidak ada pilihan tersedia',
+                removeItemButton: true,
+                placeholder: true,
+                placeholderValue: '-- Pilih Instansi --',
+                shouldSort: false
+            });
+
+            console.log('Choices.js for Instansi initialized successfully!');
+        } else {
+            console.error('Element #dinas_id not found');
+        }
+
+        // Initialize Choices for Agenda (agenda_id)
+        const agendaElement = document.getElementById('agenda_id');
+
+        if (agendaElement) {
+            const agendaChoices = new Choices(agendaElement, {
+                searchEnabled: true,
+                searchPlaceholderValue: 'Ketik untuk mencari agenda...',
+                itemSelectText: 'Klik untuk memilih',
+                noResultsText: 'Tidak ada agenda ditemukan',
+                noChoicesText: 'Tidak ada agenda tersedia',
+                placeholder: true,
+                placeholderValue: 'Pilih Agenda',
+                shouldSort: false
+            });
+
+            console.log('Choices.js for Agenda initialized successfully!');
+        } else {
+            console.error('Element #agenda_id not found');
+        }
+    });
+</script>
+@endpush

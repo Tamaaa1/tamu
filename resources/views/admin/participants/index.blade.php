@@ -2,31 +2,54 @@
 
 @section('title', 'Manajemen Peserta')
 
+@vite(['resources/css/admin/participants.css'])
+
 @section('content')
 <!-- Page Heading -->
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Manajemen Peserta</h1>
 </div>
 
-
-
 <!-- Filter Tanggal, Bulan, Tahun -->
-<form method="GET" action="{{ route('admin.participants.index') }}" class="mb-4">
+<form method="GET" action="{{ route('admin.participants.index') }}" class="mb-4" id="filterForm">
     <div class="input-group">
-        <input type="number" name="tanggal" id="tanggal" class="form-control" placeholder="Tanggal" min="1" max="31" value="{{ request('tanggal') }}">
-        <input type="number" name="bulan" id="bulan" class="form-control" placeholder="Bulan" min="1" max="12" value="{{ request('bulan') }}">
-        <input type="number" name="tahun" id="tahun" class="form-control" placeholder="Tahun" min="2000" value="{{ request('tahun') }}">
-        <select name="agenda_id" class="form-control">
-            <option value="">Pilih Agenda...</option>
-            @foreach($agendas as $agenda)
-                <option value="{{ $agenda->id }}" {{ request('agenda_id') == $agenda->id ? 'selected' : '' }}>
-                    {{ $agenda->nama_agenda }}
-                </option>
-            @endforeach
-        </select>
+        
+        <!-- Searchable Dropdown untuk Agenda -->
+        <div class="form-control p-0 position-relative" style="min-width: 200px;">
+            <input type="hidden" name="agenda_id" id="agenda_id" value="{{ request('agenda_id') }}">
+            <input type="text" id="agenda_search" class="form-control border-0" placeholder="Cari atau pilih agenda..." 
+                   value="{{ request('agenda_id') ? $agendas->firstWhere('id', request('agenda_id'))->nama_agenda ?? '' : '' }}"
+                   autocomplete="off">
+            
+            <!-- Loading indicator -->
+            <div id="loading_indicator" class="position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); display: none;">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+            
+            <!-- Dropdown Results -->
+            <div id="agenda_dropdown" class="dropdown-menu w-100" style="max-height: 250px; overflow-y: auto; display: none; position: absolute; top: 100%; left: 0; z-index: 1000;">
+                <div class="dropdown-item text-center text-muted" id="loading_message" style="display: none;">
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                    Memuat data agenda...
+                </div>
+                <div class="dropdown-item text-center text-muted" id="no_results" style="display: none;">
+                    <i class="fas fa-search"></i> Tidak ada hasil ditemukan
+                </div>
+                <div id="agenda_options_container">
+                    <!-- Options will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+        
         <div class="input-group-append">
-            <button type="submit" class="btn btn-primary">Filter</button>
-            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary">Reset</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-filter me-1"></i>Filter
+            </button>
+            <a href="{{ route('admin.participants.index') }}" class="btn btn-secondary">
+                <i class="fas fa-times me-1"></i>Reset
+            </a>
         </div>
     </div>
 </form>
@@ -40,22 +63,7 @@
     </div>
 @endif
 
-@if(request()->filled('agenda_id'))
-    @php
-        $agenda = \App\Models\Agenda::find(request()->agenda_id);
-    @endphp
-    @if($agenda)
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-            <i class="fas fa-filter me-2"></i>Menampilkan peserta untuk agenda: <strong>{{ $agenda->nama_agenda }}</strong>
-            <a href="{{ route('admin.participants.index') }}" class="btn btn-sm btn-outline-info ml-3">
-                <i class="fas fa-times me-1"></i>Hapus Filter
-            </a>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    @endif
-@endif
+
 
 <!-- DataTales Example -->
 <div class="card shadow mb-4">
@@ -63,10 +71,14 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h6 class="m-0 font-weight-bold text-white">Daftar Peserta</h6>
-                @if($participants->hasPages())
+                @if(request('agenda_id'))
                     <small class="text-white-50">
-                        Halaman {{ $participants->currentPage() }} dari {{ $participants->lastPage() }}
-                        (Total: {{ $participants->total() }} data)
+                        Difilter berdasarkan agenda: {{ $agendas->firstWhere('id', request('agenda_id'))->nama_agenda ?? 'Tidak ditemukan' }}
+                    </small>
+                @else
+                    <small class="text-white-50" id="participants_info" style="display: none;">
+                        Halaman <span id="current_page">1</span> dari <span id="last_page">1</span>
+                        (Total: <span id="total_participants">0</span> data)
                     </small>
                 @endif
             </div>
@@ -74,81 +86,132 @@
                 <a href="{{ route('admin.participants.create') }}" class="btn btn-light btn-sm me-2">
                     <i class="fas fa-plus me-1"></i>Tambah Peserta
                 </a>
-                <a href="{{ route('participants.export-pdf', request()->all()) }}" class="btn btn-light btn-sm">
-                    <i class="fas fa-file-pdf me-1"></i>Ekspor PDF
-                </a>
+                @if(request('agenda_id'))
+                    <a href="{{ route('admin.participants.export-pdf', ['agenda_id' => request('agenda_id')]) }}" class="btn btn-light btn-sm" id="export_pdf_btn">
+                        <i class="fas fa-file-pdf me-1"></i>Ekspor PDF
+                    </a>
+                @else
+                    <a href="{{ route('admin.participants.export-pdf') }}" class="btn btn-light btn-sm" id="export_pdf_btn">
+                        <i class="fas fa-file-pdf me-1"></i>Ekspor PDF
+                    </a>
+                @endif
             </div>
         </div>
     </div>
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Jabatan</th>
-                        <th>Dinas</th>
-                        <th>No HP</th>
-                        <th>Agenda</th>
-                        <th>Tanggal Daftar</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($participants as $index => $participant)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $participant->nama }}</td>
-                            <td>{{ $participant->jabatan }}</td>
-                            <td>
-                                <span class="badge badge-info d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 150px;">
-                                    {{ $participant->masterDinas->nama_dinas ?? 'N/A' }}
-                                </span>
-                            </td>
-                            <td>{{ $participant->no_hp }}</td>
-                            <td>
-                                <span class="badge badge-primary d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 150px;">
-                                    {{ $participant->agenda->nama_agenda ?? 'N/A' }}
-                                </span>
-                            </td>
-                            <td>{{ $participant->created_at->format('d/m/Y') }}</td>
-                            <td>
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('admin.participants.show', $participant) }}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.participants.edit', $participant) }}" class="btn btn-sm btn-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('admin.participants.destroy', $participant) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus peserta ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="text-center text-muted py-4">
-                                <i class="fas fa-users fa-3x mb-3"></i>
-                                <p>Belum ada peserta yang terdaftar</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Pagination -->
-        @if($participants->hasPages())
-            <div class="d-flex justify-content-center mt-4">
-                {{ $participants->links() }}
+        @if(request('agenda_id'))
+            <!-- Server-side rendered table for filtered view -->
+            @if($participants->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Jabatan</th>
+                                <th>Instansi</th>
+                                <th>Agenda</th>
+                                <th>No HP</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($participants as $index => $participant)
+                                <tr>
+                                    <td>{{ $participants->firstItem() + $index }}</td>
+                                    <td>{{ $participant->nama }}</td>
+                                    <td>{{ $participant->jabatan }}</td>
+                                    <td>
+                                        <span class="badge badge-info d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 200px;">
+                                            {{ $participant->masterDinas->nama_dinas ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-primary d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 200px;">
+                                            {{ $participant->agenda->nama_agenda ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $participant->no_hp }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ route('admin.participants.show', $participant) }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ route('admin.participants.edit', $participant) }}" class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-danger delete-participant-btn"
+                                                    data-route="{{ route('admin.participants.destroy', $participant) }}"
+                                                    data-confirm-message="Yakin ingin menghapus peserta ini?"
+                                                    data-success-message="Peserta berhasil dihapus!"
+                                                    data-error-message="Gagal menghapus peserta. Silakan coba lagi."
+                                                    data-reload-page="true">
+                                                <i class="fas fa-trash"></i>
+                                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination for server-side -->
+                <div class="d-flex justify-content-center mt-4">
+                    {{ $participants->appends(request()->query())->links() }}
+                </div>
+            @else
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <p>Belum ada peserta yang terdaftar untuk agenda ini</p>
+                </div>
+            @endif
+        @else
+            <!-- Loading indicator for participants -->
+            <div id="participants_loading" class="text-center py-4" style="display: none;">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Memuat data peserta...</p>
+            </div>
+
+            <!-- Participants table container -->
+            <div id="participants_table_container">
+                <!-- Table will be loaded dynamically -->
+            </div>
+
+            <!-- Pagination container -->
+            <div id="participants_pagination" class="d-flex justify-content-center mt-4" style="display: none;">
+                <!-- Pagination will be loaded dynamically -->
+            </div>
+
+            <!-- Empty state -->
+            <div id="participants_empty" class="text-center text-muted py-4" style="display: none;">
+                <i class="fas fa-users fa-3x mb-3"></i>
+                <p>Belum ada peserta yang terdaftar</p>
             </div>
         @endif
     </div>
 </div>
+
+<!-- JavaScript Routes for AJAX calls -->
+<script>
+window.routes = {
+    admin: {
+        agendas: {
+            search: '{{ route("admin.agendas.search") }}'
+        },
+        participants: {
+            load: '{{ route("admin.participants.load") }}'
+        }
+    },
+    participants: {
+        load: '{{ route("admin.participants.load") }}',
+        exportPdf: '{{ route("admin.participants.export-pdf") }}'
+    }
+};
+</script>
+
+@vite(['resources/js/admin/participants.js'])
+
 @endsection

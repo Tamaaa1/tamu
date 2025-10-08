@@ -22,15 +22,17 @@ Route::post('/agenda/register', [PublicAgendaController::class, 'registerPartici
     ->middleware('throttle:10,1') // Rate limiting: 10 requests per minute
     ->name('agenda.register');
 
+// Routes untuk AJAX search agenda
+    Route::post('/agendas/clear-cache', [AgendaController::class, 'clearSearchCache'])->name('agendas.clear-cache');
+
 // Authentication Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/admin/participants/export-pdf', [AdminController::class, 'exportParticipantsPdf'])->name('participants.export-pdf');
-
-// Admin Routes (Auth Required)
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Export PDF route
+    Route::get('/participants/export-pdf', [AdminController::class, 'exportParticipantsPdf'])->name('participants.export-pdf');
     // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
@@ -40,18 +42,24 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('agenda/{agenda}/qrcode', [AgendaController::class, 'showQrCode'])->name('agenda.qrcode');
     Route::get('agenda/{agenda}/export-qrcode-pdf', [AgendaController::class, 'exportQrCodePdf'])->name('agenda.export-qrcode-pdf');
     Route::post('agenda/{agenda}/toggle-link', [AgendaController::class, 'toggleLinkActive'])->name('agenda.toggle-link');
+    Route::get('agendas/search', [AgendaController::class, 'search'])->name('agendas.search');
+    Route::get('agendas/load', [AgendaController::class, 'load'])->name('agendas.load');
     
     // Agenda Detail Management
     Route::resource('agenda-detail', AgendaDetailController::class);
     
     // Participants Management (AdminController)
     Route::get('/participants', [ParticipantController::class, 'index'])->name('participants.index');
+    Route::get('/participants/search-agenda', [ParticipantController::class, 'searchAgenda'])->name('participants.search-agenda');
+    Route::get('/participants/load', [ParticipantController::class, 'loadParticipants'])->name('participants.load');
     Route::get('/participants/create', [ParticipantController::class, 'create'])->name('participants.create');
     Route::post('/participants', [ParticipantController::class, 'store'])->name('participants.store');
     Route::get('/participants/{participant}', [ParticipantController::class, 'show'])->name('participants.show');
     Route::get('/participants/{participant}/edit', [ParticipantController::class, 'edit'])->name('participants.edit');
     Route::put('/participants/{participant}', [ParticipantController::class, 'update'])->name('participants.update');
     Route::delete('/participants/{participant}', [ParticipantController::class, 'destroy'])->name('participants.destroy');
+
+
     
     // Master Dinas Management
     Route::resource('master-dinas', MasterDinasController::class);
@@ -63,4 +71,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users/{user}/edit', [AdminController::class, 'userEdit'])->name('users.edit');
     Route::put('/users/{user}', [AdminController::class, 'userUpdate'])->name('users.update');
     Route::delete('/users/{user}', [AdminController::class, 'userDestroy'])->name('users.destroy');
+
+    // Protected file serving for signatures
+    Route::get('/signature/{filename}', [AdminController::class, 'serveSignature'])->name('signature.serve');
 });

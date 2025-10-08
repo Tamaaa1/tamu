@@ -6,6 +6,7 @@
     <title>Admin Login - TAMU</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js?render=6LeK6MYrAAAAAOtetsgYZYq5Lrlep9ZFxkJrFzly"></script>
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -37,15 +38,21 @@
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
                                     @foreach($errors->all() as $error)
-                                        <li>{{ $error }}</li>
+                                        <li>{!! nl2br(e($error)) !!}</li>
                                     @endforeach
                                 </ul>
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('login') }}">
+                        @error('recaptcha')
+                            <div class="alert alert-danger">
+                                {!! nl2br(e($message)) !!}
+                            </div>
+                        @enderror
+
+                        <form method="POST" action="{{ route('login') }}" id="login-form">
                             @csrf
-                            
+
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
                                 <div class="input-group">
@@ -57,7 +64,7 @@
                                 </div>
                             </div>
 
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
@@ -65,6 +72,13 @@
                                     </span>
                                     <input type="password" class="form-control" id="password" name="password" required>
                                 </div>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                                <label class="form-check-label" for="remember">
+                                    Ingat saya
+                                </label>
                             </div>
 
                             <div class="d-grid mb-3">

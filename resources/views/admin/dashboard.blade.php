@@ -11,15 +11,15 @@
 <!-- Content Row -->
 <div class="row">
 
-    <!-- Total Agendas Card -->
+    <!-- Agenda Hari Ini Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Agenda</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalAgendas }}</div>
+                            Agenda Hari Ini</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $agendasToday }}</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -29,54 +29,54 @@
         </div>
     </div>
 
-    <!-- Total Participants Card -->
+    <!-- Agenda Minggu Ini Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Total Peserta</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalParticipants }}</div>
+                            Agenda Minggu Ini</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $agendasThisWeek }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Dinas Card -->
+    <!-- Agenda Bulan Ini Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                            Total Dinas</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalDinas }}</div>
+                            Agenda Bulan Ini</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $agendasThisMonth }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-building fa-2x text-gray-300"></i>
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Users Card -->
+    <!-- Agenda Tahun Ini Card -->
     <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-warning shadow h-100 py-2">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Total Users</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalUsers }}</div>
+                            Agenda Tahun Ini</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $agendasThisYear }}</div>
                     </div>
                     <div class="col-auto">
-                        <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
                     </div>
                 </div>
             </div>
@@ -104,8 +104,8 @@
                         <table class="table table-bordered" width="100%" cellspacing="0">
                             <thead class="thead-light">
                                 <tr>
-                                    <th>Nama Agenda</th>
-                                    <th>Dinas</th>
+                                    <th>Agenda</th>
+                                    <th>Instansi</th>
                                     <th>Tanggal</th>
                                     <th>Aksi</th>
                                 </tr>

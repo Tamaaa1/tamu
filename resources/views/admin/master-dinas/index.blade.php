@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <div>
-                        <h3 class="card-title">Data Master Dinas</h3>
+                        <h3 class="card-title">Manajemen Instansi</h3>
                         @if($dinas->hasPages())
                             <small class="text-muted">
                                 Halaman {{ $dinas->currentPage() }} dari {{ $dinas->lastPage() }}
@@ -16,7 +16,7 @@
                         @endif
                     </div>
                     <a href="{{ route('admin.master-dinas.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus me-1"></i>Tambah Dinas
+                        <i class="fas fa-plus me-1"></i>Tambah Instansi
                     </a>
                 </div>
                 <div class="card-body">
@@ -31,7 +31,7 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Dinas</th>
+                                    <th>Nama Instansi</th>
                                     <th>Alamat</th>
                                     <th>Email</th>
                                     <th>Aksi</th>

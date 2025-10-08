@@ -37,11 +37,11 @@
                     </div>
                     
                     <div class="col-md-6">
-                        <h5 class="font-weight-bold">Dinas</h5>
+                        <h5 class="font-weight-bold">Instansi</h5>
                         <p class="text-muted">
-                            <span class="badge badge-info">
-                                {{ $participant->masterDinas->nama_dinas ?? 'N/A' }}
-                            </span>
+                                <span class="badge badge-info d-inline-block" style="word-wrap: break-word; white-space: normal; max-width: 300px;">
+                                    {{ $participant->masterDinas->nama_dinas ?? 'N/A' }}
+                                </span>
                         </p>
                         
                         <h5 class="font-weight-bold">Agenda</h5>
@@ -63,22 +63,16 @@
                         @if(strpos($participant->gambar_ttd, 'data:image/') === 0)
                             <img src="{{ $participant->gambar_ttd }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px;">
                         @else
-                            <img src="{{ asset('storage/' . $participant->gambar_ttd) }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px;">
+                            @php
+                                $filename = basename($participant->gambar_ttd);
+                            @endphp
+                            <img src="{{ route('admin.signature.serve', $filename) }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px;">
                         @endif
                     </div>
                 </div>
                 @endif
                 
-                @if($participant->qr_code_base64)
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <h5 class="font-weight-bold">QR Code</h5>
-                        <div class="text-center">
-                            <img src="{{ $participant->qr_code_base64 }}" alt="QR Code" style="max-width: 200px; height: auto;">
-                        </div>
-                    </div>
-                </div>
-                @endif
+
             </div>
         </div>
     </div>

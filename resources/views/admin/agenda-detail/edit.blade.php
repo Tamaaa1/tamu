@@ -65,7 +65,7 @@
                 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="dinas_id">Dinas <span class="text-danger">*</span></label>
+                        <label for="dinas_id">Instansi <span class="text-danger">*</span></label>
                         <select class="form-control @error('dinas_id') is-invalid @enderror" id="dinas_id" name="dinas_id" required>
                             <option value="">-- Pilih Dinas --</option>
                             @foreach($dinas as $dina)
@@ -113,7 +113,10 @@
                         @if(strpos($agendaDetail->gambar_ttd, 'data:image/') === 0)
                             <img src="{{ $agendaDetail->gambar_ttd }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px; border: 1px solid #ddd; padding: 5px;">
                         @else
-                            <img src="{{ asset('storage/' . $agendaDetail->gambar_ttd) }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px; border: 1px solid #ddd; padding: 5px;">
+                            @php
+                                $filename = basename($agendaDetail->gambar_ttd);
+                            @endphp
+                            <img src="{{ route('admin.signature.serve', $filename) }}" alt="Tanda Tangan" class="img-fluid" style="max-height: 100px; border: 1px solid #ddd; padding: 5px;">
                         @endif
                     </div>
                 </div>

@@ -8,8 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use App\Helpers\SignatureHelper;
+use App\Services\SignatureService;
 use App\Traits\Filterable;
 
 class PublicAgendaController extends Controller
@@ -109,25 +108,84 @@ class PublicAgendaController extends Controller
      */
     public function registerParticipant(Request $request)
     {
+        // Honeypot check - bot akan mengisi field ini
+        if (!empty($request->input('website')) || !empty($request->input('confirm_email'))) {
+            Log::warning('Spam attempt detected via honeypot', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'data' => $request->all()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Permintaan tidak valid.'
+            ], 400);
+        }
+
+        // Validasi reCAPTCHA jika diaktifkan
+        if (config('services.recaptcha.site_key')) {
+            $recaptchaResponse = $request->input('g-recaptcha-response');
+            if (!$recaptchaResponse) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['recaptcha' => ['Verifikasi reCAPTCHA diperlukan']]
+                ], 422);
+            }
+
+            // Verifikasi reCAPTCHA
+            $recaptchaSecret = config('services.recaptcha.secret_key');
+            $recaptchaVerify = file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret={$recaptchaSecret}&response={$recaptchaResponse}");
+            $recaptchaData = json_decode($recaptchaVerify);
+
+            if (!$recaptchaData->success || $recaptchaData->score < 0.5) {
+                Log::warning('reCAPTCHA verification failed', [
+                    'ip' => $request->ip(),
+                    'score' => $recaptchaData->score ?? 'N/A'
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['recaptcha' => ['Verifikasi reCAPTCHA gagal']]
+                ], 422);
+            }
+        }
+
+        // Validasi waktu pengisian form (minimal 3 detik untuk mencegah bot)
+        $formStartTime = $request->input('form_start_time');
+        if ($formStartTime && (time() - $formStartTime) < 3) {
+            Log::warning('Form submitted too quickly - possible bot', [
+                'ip' => $request->ip(),
+                'time_taken' => time() - $formStartTime
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Form diisi terlalu cepat. Silakan coba lagi.'
+            ], 429);
+        }
+
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|min:2|max:100',
+            'gender' => 'required|in:Laki-laki,Perempuan',
             'jabatan' => 'required|string',
             'no_hp' => 'required|string|regex:/^[0-9]+$/|min:10|max:13',
-            'dinas_id' => 'required|exists:master_dinas,dinas_id',
+            'dinas_id' => 'required|string',
+            'manual_dinas' => 'nullable|string|min:2|max:255',
             'signature' => 'required|string',
-            'agenda_id' => 'required|exists:agendas,id'
+            'agenda_id' => 'required|exists:agendas,id',
+            'form_start_time' => 'nullable|integer'
         ], [
             'nama.required' => 'Nama harus diisi',
             'nama.min' => 'Nama minimal 2 karakter',
             'nama.max' => 'Nama maksimal 100 karakter',
+            'gender.required' => 'Jenis kelamin harus dipilih',
+            'gender.in' => 'Jenis kelamin tidak valid',
             'jabatan.required' => 'Jabatan harus diisi',
             'no_hp.required' => 'Nomor HP harus diisi',
             'no_hp.regex' => 'Nomor HP hanya boleh berisi angka',
             'no_hp.min' => 'Nomor HP minimal 10 digit',
             'no_hp.max' => 'Nomor HP maksimal 13 digit',
             'dinas_id.required' => 'Dinas harus dipilih',
-            'dinas_id.exists' => 'Dinas yang dipilih tidak valid',
-            'signature.required' => 'Tanda tangan harus diisi'
+            'signature.required' => 'Tanda tangan harus diisi',
+            'manual_dinas.min' => 'Nama instansi minimal 2 karakter',
+            'manual_dinas.max' => 'Nama instansi maksimal 255 karakter',
         ]);
 
         if ($validator->fails()) {
@@ -137,44 +195,66 @@ class PublicAgendaController extends Controller
             ], 422);
         }
 
-        // Convert tanda tangan Base64 menjadi file menggunakan helper
-        $signaturePath = null;
-        if ($request->signature) {
-            try {
-                $signaturePath = SignatureHelper::processSignature($request->signature);
-            } catch (\Exception $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ], 500);
-            }
+        // Handle signature pad data (base64 image)
+        try {
+            $signatureService = new SignatureService();
+            $signaturePath = $signatureService->validateAndProcessSignature($request->signature);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
 
-        // Generate QR Code data (simpan data ini saja)
-        $qrData = json_encode([
-            'nama' => $request->nama,
-            'jabatan' => $request->jabatan,
-            'no_hp' => $request->no_hp,
-            'dinas_id' => $request->dinas_id,
-            'agenda_id' => $request->agenda_id,
-            'timestamp' => now()->toISOString()
-        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        // Determine dinas_id to use
+        $finalDinasId = $request->dinas_id;
+        if ($request->dinas_id === 'other') {
+            $manualDinasName = trim($request->manual_dinas);
+            if (empty($manualDinasName)) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['manual_dinas' => ['Nama instansi harus diisi jika memilih Lainnya']]
+                ], 422);
+            }
 
-        // Generate QR Code sebagai SVG untuk response
-        $qrCodeSvg = QrCode::size(200)->generate($qrData);
+            // Check if manual dinas already exists
+            $existingDinas = MasterDinas::where('nama_dinas', $manualDinasName)->first();
+            if ($existingDinas) {
+                $finalDinasId = $existingDinas->dinas_id;
+            } else {
+                // Create new MasterDinas entry
+                $newDinas = MasterDinas::create([
+                    'dinas_id' => \Illuminate\Support\Str::uuid()->toString(),
+                    'nama_dinas' => $manualDinasName,
+                    'email' => null,
+                    'alamat' => null,
+                ]);
+                $finalDinasId = $newDinas->dinas_id;
 
-        // Konversi SVG ke base64 untuk display di HTML
-        $qrCodeBase64 = 'data:image/svg+xml;base64,' . base64_encode($qrCodeSvg);
+                // Clear cache for master_dinas if caching is used
+                Cache::forget('master_dinas');
+            }
+        } else {
+            // Validate that the selected dinas_id exists
+            $existingDinas = MasterDinas::where('dinas_id', $request->dinas_id)->first();
+            if (!$existingDinas) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => ['dinas_id' => ['Instansi yang dipilih tidak valid']]
+                ], 422);
+            }
+            $finalDinasId = $request->dinas_id;
+        }
 
-        // Save participant data - simpan hanya data JSON untuk QR code
+        // Save participant data
         $participant = \App\Models\AgendaDetail::create([
             'agenda_id' => $request->agenda_id,
             'nama' => $request->nama,
-            'dinas_id' => $request->dinas_id,
+            'gender' => $request->gender,
+            'dinas_id' => $finalDinasId,
             'jabatan' => $request->jabatan,
             'no_hp' => $request->no_hp,
             'gambar_ttd' => $signaturePath,
-            'qr_code' => $qrData
         ]);
 
         // Logging pendaftaran peserta

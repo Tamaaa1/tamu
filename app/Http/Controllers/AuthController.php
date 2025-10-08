@@ -19,10 +19,12 @@ class AuthController extends Controller
     {
         $credentials = $request->validate([
             'username' => 'required|string',
-            'password' => 'required|string'
+            'password' => 'required|string',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $remember = $request->has('remember'); // Cek apakah remember me dicentang
+
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password], $remember)) {
             $request->session()->regenerate(); // Regenerasi session untuk keamanan
             return redirect()->intended('/admin/dashboard');
         }

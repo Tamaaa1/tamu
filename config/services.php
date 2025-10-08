@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'recaptcha' => [
+        'key' => '6LeK6MYrAAAAAOtetsgYZYq5Lrlep9ZFxkJrFzly',
+        'secret' => '6LeK6MYrAAAAAM3lR4lSHpe9mDomadHDnB2Ja8Et',
+    ],
+
 ];

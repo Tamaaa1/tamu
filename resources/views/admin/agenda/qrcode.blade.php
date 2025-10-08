@@ -65,9 +65,9 @@
                 <!-- Dinas Information -->
                 <div class="row">
                     <div class="col-md-6">
-                        <h5 class="font-weight-bold">Dinas</h5>
+                        <h5 class="font-weight-bold">Instansi</h5>
                         <p class="text-muted">
-                            <span class="badge badge-info">
+                            <span class="badge badge-info" style="word-wrap: break-word; white-space: normal; max-width: 300px;">
                                 {{ $agenda->masterDinas->nama_dinas ?? 'N/A' }}
                             </span>
                         </p>

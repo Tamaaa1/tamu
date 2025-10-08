@@ -1,6 +1,25 @@
 @extends('admin.layouts.app')
 
 @section('title', 'Edit Agenda')
+@push('styles')
+<!-- Choices.js CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+<style>
+    .choices__inner {
+        min-height: 38px;
+        padding: 5px 7.5px 3.75px;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.35rem;
+        background-color: #fff;
+    }
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+        background-color: #4e73df;
+    }
+    .is-invalid + .choices .choices__inner {
+        border-color: #e74a3b;
+    }
+</style>
+@endpush
 
 @section('content')
 <!-- Page Heading -->
@@ -35,17 +54,18 @@
                 
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="dinas_id">Dinas <span class="text-danger">*</span></label>
-                        <select class="form-control @error('dinas_id') is-invalid @enderror" id="dinas_id" name="dinas_id" required>
-                            <option value="">-- Pilih Dinas --</option>
+                        <label for="dinas_id">Instansi <span class="text-danger">*</span></label>
+                        <select class="form-select @error('dinas_id') is-invalid @enderror"
+                                id="dinas_id" name="dinas_id" required>
                             @foreach($dinas as $dina)
-                                <option value="{{ $dina->dinas_id }}" {{ old('dinas_id', $agenda->dinas_id) == $dina->dinas_id ? 'selected' : '' }}>
+                                <option value="{{ $dina->dinas_id }}"
+                                        {{ old('dinas_id') == $dina->dinas_id ? 'selected' : '' }}>
                                     {{ $dina->nama_dinas }}
                                 </option>
                             @endforeach
                         </select>
                         @error('dinas_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
@@ -55,14 +75,38 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="tanggal_agenda">Tanggal Agenda <span class="text-danger">*</span></label>
-                        <input type="date" class="form-control @error('tanggal_agenda') is-invalid @enderror" 
+                        <input type="date" class="form-control @error('tanggal_agenda') is-invalid @enderror"
                                id="tanggal_agenda" name="tanggal_agenda" value="{{ old('tanggal_agenda', $agenda->tanggal_agenda) }}" required>
                         @error('tanggal_agenda')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
-                
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="tempat">Tempat Acara <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('tempat') is-invalid @enderror"
+                               id="tempat" name="tempat" value="{{ old('tempat', $agenda->tempat) }}" required>
+                        @error('tempat')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="waktu">Waktu Acara <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('waktu') is-invalid @enderror"
+                               id="waktu" name="waktu" value="{{ old('waktu', $agenda->waktu) }}" placeholder="Contoh: 08.30 WIB - Selesai" required>
+                        @error('waktu')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <div class="col-md-6">
                     <div class="form-group">
                         <label for="link_acara">Link Acara</label>
@@ -96,3 +140,33 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<!-- Choices.js -->
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const element = document.getElementById('dinas_id');
+        
+        if (element) {
+            const choices = new Choices(element, {
+                searchEnabled: true,
+                searchPlaceholderValue: 'Ketik untuk mencari...',
+                itemSelectText: 'Klik untuk memilih',
+                noResultsText: 'Tidak ada hasil ditemukan',
+                noChoicesText: 'Tidak ada pilihan tersedia',
+                removeItemButton: true,
+                placeholder: true,
+                placeholderValue: '-- Pilih Instansi --',
+                shouldSort: false
+            });
+
+            console.log('Choices.js initialized successfully!');
+        } else {
+            console.error('Element #dinas_id not found');
+        }
+    });
+</script>
+@endpush
+
+

@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
 class Agenda extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'agendas';
 
@@ -16,6 +17,8 @@ class Agenda extends Model
         'dinas_id',
         'nama_agenda',
         'tanggal_agenda',
+        'tempat',
+        'waktu',
         'nama_koordinator',
         'link_acara',
         'link_active',
@@ -55,6 +58,15 @@ class Agenda extends Model
     public function scopeToday($query)
     {
         return $query->whereDate('tanggal_agenda', today());
+    }
+
+    // Scope untuk agenda minggu ini
+    public function scopeThisWeek($query)
+    {
+        return $query->whereBetween('tanggal_agenda', [
+            now()->startOfWeek(),
+            now()->endOfWeek()
+        ]);
     }
 
     // Scope untuk agenda bulan ini
@@ -128,4 +140,7 @@ class Agenda extends Model
             }
         });
     }
+
+    
+    
 }

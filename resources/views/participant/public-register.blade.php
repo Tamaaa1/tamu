@@ -8,16 +8,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-5-theme/1.3.0/select2-bootstrap-5-theme.min.css" rel="stylesheet">
     <link href="{{ asset('css/public-register.css') }}" rel="stylesheet">
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
 </head>
 <body>
     <!-- Header Section -->
     <div class="govt-header">
-        <div class="container">
-            <div class="text-center">
-                <h1><i class="fas fa-landmark me-2"></i>Sistem Pendaftaran Peserta</h1>
-                <p>Dinas Komunikasi dan Informatika</p>
-            </div>
+        <div class="container text-center">
+            <img src="{{ asset('storage/Pemkot.png') }}" alt="Pemkot Logo" style="width: 100px; height: auto; margin-bottom: 10px;">
+            <h1><i class=></i>Dinas Komunikasi dan Informatika Kota Pontianak</h1>
         </div>
     </div>
 
@@ -39,21 +42,6 @@
                                     <span><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($agenda->tanggal_agenda)->format('d F Y') }}</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Agenda Selection -->
-                        <div class="form-group mt-4">
-                            <label class="form-label">
-                                <i class="fas fa-exchange-alt me-2"></i>
-                                Pilih Agenda Lain pada Tanggal yang Sama
-                            </label>
-                            <select class="form-select" id="agenda_id" name="agenda_id">
-                                @foreach($agendasOnSameDate as $agendaItem)
-                                    <option value="{{ $agendaItem->id }}" {{ $agendaItem->id == $agenda->id ? 'selected' : '' }}>
-                                        {{ $agendaItem->nama_agenda }}
-                                    </option>
-                                @endforeach
-                            </select>
                         </div>
                     </div>
                 </div>
@@ -84,12 +72,15 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">
-                                            <i class="fas fa-briefcase"></i>
-                                            Jabatan <span class="text-danger">*</span>
+                                            <i class="fas fa-venus-mars"></i>
+                                            Jenis Kelamin <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" class="form-control" id="jabatan" name="jabatan" required 
-                                               placeholder="Masukkan jabatan Anda">
-                                        <div class="error-message" id="jabatan-error"></div>
+                                        <select class="form-select" id="gender" name="gender" required>
+                                            <option value="">Pilih Jenis Kelamin</option>
+                                            <option value="Laki-laki" {{ old('gender') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                            <option value="Perempuan" {{ old('gender') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                        </select>
+                                        <div class="error-message" id="gender-error"></div>
                                     </div>
                                 </div>
                             </div>
@@ -98,28 +89,44 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">
-                                            <i class="fas fa-phone-alt"></i>
-                                            Nomor HP <span class="text-danger">*</span>
+                                            <i class="fas fa-briefcase"></i>
+                                            Jabatan <span class="text-danger">*</span>
                                         </label>
-                                        <input type="text" class="form-control" id="no_hp" name="no_hp" required 
-                                               placeholder="Contoh: 081234567890"
-                                               pattern="[0-9]{10,13}">
-                                        <div class="error-message" id="no_hp-error"></div>
+                                        <input type="text" class="form-control" id="jabatan" name="jabatan" required
+                                               placeholder="Masukkan jabatan Anda">
+                                        <div class="error-message" id="jabatan-error"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label class="form-label">
-                                            <i class="fas fa-building"></i>
-                                            Dinas Asal <span class="text-danger">*</span>
+                                            <i class="fas fa-phone-alt"></i>
+                                            Nomor HP <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-select" id="dinas_id" name="dinas_id" required>
-                                            <option value="">Pilih Dinas...</option>
+                                        <input type="text" class="form-control" id="no_hp" name="no_hp" required
+                                               placeholder="Contoh: 081234567890"
+                                               pattern="[0-9]{10,13}">
+                                        <div class="error-message" id="no_hp-error"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">
+                                            <i class="fas fa-building"></i>
+                                            Instansi <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select select2-instansi" id="dinas_id" name="dinas_id" required>
+                                            <option value="">Pilih Instansi...</option>
                                             @foreach($dinas as $dinasItem)
                                                 <option value="{{ $dinasItem->dinas_id }}">{{ $dinasItem->nama_dinas }}</option>
                                             @endforeach
+                                            <option value="other">Lainnya...</option>
                                         </select>
-                                        <div class="error-message" accesskeyid="dinas_id-error"></div>
+                                        <input type="text" class="form-control mt-2" id="manual_dinas" name="manual_dinas" placeholder="Masukkan nama instansi" style="display: none;">
+                                        <div class="error-message" id="dinas_id-error"></div>
                                     </div>
                                 </div>
                             </div>
@@ -132,8 +139,8 @@
                                 </label>
                                 <small class="text-muted d-block mb-2">Gunakan mouse atau jari untuk membuat tanda tangan di area berikut</small>
                                 
-                                <div class="signature-pad" id="signaturePad">
-                                    <canvas id="signatureCanvas"></canvas>
+                                <div class="signature-pad-container">
+                                    <canvas id="signatureCanvas" width="400" height="200" style="border: 1px solid #ddd; background: white;"></canvas>
                                     <div class="signature-placeholder">
                                         <i class="fas fa-pen"></i>
                                         <p>Klik dan tarik untuk membuat tanda tangan</p>
@@ -154,7 +161,7 @@
                             <!-- Submit Button -->
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-primary" id="submitBtn">
-                                    <i class="fas fa-paper-plane me-2"></i>Daftar Sekarang
+                                    <i class="fas fa-paper-plane me-2"></i>Simpan Absensi
                                 </button>
                                 <p class="text-muted mt-3">
                                     <i class="fas fa-info-circle me-1"></i>
@@ -163,13 +170,18 @@
                             </div>
                         </form>
 
-                        <!-- Success Message -->
-                        <div id="successMessage" class="alert alert-success mt-4" style="display: none;">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-check-circle me-3 fa-2x"></i>
-                                <div>
-                                    <h5 class="mb-2">Pendaftaran Berhasil!</h5>
-                                    <p class="mb-2">Data Anda telah berhasil disimpan. Terima kasih telah mendaftar.</p>
+                        <!-- Custom Success Popup -->
+                        <div class="custom-popup-overlay" id="customSuccessPopup" style="display: none;">
+                            <div class="custom-popup">
+                                <div class="custom-popup-header">
+                                    <i class="fas fa-check-circle popup-icon"></i>
+                                    <h3 class="popup-title">Absensi Berhasil!</h3>
+                                </div>
+                                <div class="custom-popup-body">
+                                    <p>Terima kasih atas kerjasamanya.</p>
+                                </div>
+                                <div class="custom-popup-footer">
+                                    <button type="button" class="btn btn-outline-elegant" onclick="closeCustomPopup()">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -193,13 +205,19 @@
     <!-- Footer -->
     <footer class="text-center py-4 text-white mt-5">
         <div class="container">
-            <p>&copy; Copyright Dinas Komunikasi dan Informatika Kota Pontianak.</p>
+            <p>&copy; 2025 Copyright Dinas Komunikasi dan Informatika Kota Pontianak.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery (required for Select2) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
     <script src="{{ asset('js/signature-pad.js') }}"></script>
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="{{ asset('js/public-register.js') }}"></script>
 </body>
 </html>

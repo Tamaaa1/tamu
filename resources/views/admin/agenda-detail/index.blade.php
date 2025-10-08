@@ -43,7 +43,7 @@
                         <th>No</th>
                         <th>Nama</th>
                         <th>Jabatan</th>
-                        <th>Dinas</th>
+                        <th>Instansi</th>
                         <th>No HP</th>
                         <th>Agenda</th>
                         <th>Aksi</th>

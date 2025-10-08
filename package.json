@@ -19,7 +19,9 @@
         "bootstrap": "^5.3.7",
         "jquery": "^3.7.1",
         "jquery-easing": "^0.0.1",
+        "select2": "^4.1.0-rc.0",
         "signature_pad": "^5.0.10",
-        "startbootstrap-sb-admin-2": "^4.1.4"
+        "startbootstrap-sb-admin-2": "^4.1.4",
+        "toastr": "^2.1.4"
     }
 }

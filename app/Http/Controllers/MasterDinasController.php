@@ -12,13 +12,13 @@ class MasterDinasController extends Controller
     {
         $this->middleware('auth');
     }
-
+    // Menampilkan daftar nama dinas
     public function index()
     {
         $dinas = MasterDinas::orderBy('nama_dinas')->paginate(15);
         return view('admin.master-dinas.index', compact('dinas'));
     }
-
+    // Menampilkan halaman untuk membuat dinas baru
     public function create()
     {
         return view('admin.master-dinas.create');
@@ -38,10 +38,10 @@ class MasterDinasController extends Controller
 
             MasterDinas::create($validated);
 
-            Log::info('Dinas baru dibuat: ' . $validated['nama_dinas']);
+            Log::info('Instansi baru dibuat: ' . $validated['nama_dinas']);
 
             return redirect()->route('admin.master-dinas.index')
-                ->with('success', 'Dinas berhasil ditambahkan!');
+                ->with('success', 'Instansi berhasil ditambahkan!');
         } catch (\Exception $e) {
             Log::error('Gagal membuat dinas: ' . $e->getMessage());
 
@@ -50,7 +50,7 @@ class MasterDinasController extends Controller
                 ->withErrors(['error' => 'Terjadi kesalahan saat menyimpan data dinas.']);
         }
     }
-
+    // Menampilkan halaman untuk mengedit dinas
     public function edit(MasterDinas $masterDina)
     {
         return view('admin.master-dinas.edit', compact('masterDina'));
@@ -70,20 +70,22 @@ class MasterDinasController extends Controller
             Log::info('Dinas diupdate: ' . $validated['nama_dinas']);
 
             return redirect()->route('admin.master-dinas.index')
-                ->with('success', 'Dinas berhasil diupdate!');
+                ->with('success', 'Instansi berhasil diupdate!');
         } catch (\Exception $e) {
             Log::error('Gagal update dinas: ' . $e->getMessage());
 
             return redirect()->back()
                 ->withInput()
-                ->withErrors(['error' => 'Terjadi kesalahan saat mengupdate data dinas.']);
+                ->withErrors(['error' => 'Terjadi kesalahan saat mengupdate data instansi.']);
         }
     }
-
+    // Menghapus dinas
     public function destroy(MasterDinas $masterDina)
     {
         $masterDina->delete();
         return redirect()->route('admin.master-dinas.index')
-            ->with('success', 'Dinas berhasil dihapus!');
+            ->with('success', 'Instansi berhasil dihapus!');
     }
+
+
 }
